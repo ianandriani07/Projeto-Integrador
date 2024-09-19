@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../static/styles/login.css" />
+    <title>Login</title>
+  </head>
+  <body class="fundo">
+    <div class="container">
+      <main class="card">
+        <h1>LOGIN</h1>
+        <form method="post">
+          {{ form.hidden_tag() }}
+          {{ form.username(class="card__nome") }}
+          {{ form.password(class="card__senha") }}
+          {{ form.submit(class="card__botao") }}
+        </form>
+      </main>
+    </div>
+  </body>
+</html>

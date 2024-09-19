@@ -1,0 +1,33 @@
+# Use a imagem oficial do Python no Ubuntu
+FROM ubuntu:20.04
+
+# Definir o diretório de trabalho no contêiner
+WORKDIR /app
+
+# Instala as dependências necessárias
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    python3-pip \
+    curl \
+    apt-transport-https \
+    gnupg2 \
+    unixodbc-dev \
+    && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+    && curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list -o /etc/apt/sources.list.d/mssql-release.list \
+    && apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql18
+
+# Instalar o Python e dependências do projeto
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Copiar o código da aplicação
+COPY . .
+
+# Variáveis de ambiente do Flask
+ENV FLASK_APP=app.py
+
+# Expor a porta 8000 para a aplicação Flask
+EXPOSE 8000
+
+# Rodar o Flask
+CMD ["flask", "run", "--host=0.0.0.0", "--port=8000"]
