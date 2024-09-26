@@ -25,6 +25,7 @@ COPY . .
 
 # Variáveis de ambiente do Flask
 ENV FLASK_APP=app.py
+ENV FLASK_ENV=development 
 
 # Expor a porta 8000 para a aplicação Flask
 EXPOSE 8000

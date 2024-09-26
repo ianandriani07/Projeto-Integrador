@@ -1,0 +1,77 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans', sans-serif;
+}
+
+.fundo {
+    background-color: #201b2c;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    background-color: #2f2841;
+    align-items: center;
+    width: 50vh;
+    text-align: center;
+    padding: 2.5em;
+    border-radius: 20px;
+    box-shadow: 0px 10px 40px #00000056;
+}
+
+.card > h1 {
+    color: #00ff88;
+    font-weight: 800;
+    font-size: 3vw;
+}
+
+.card__img {
+    color: white;
+    width: 100px;
+    height: 100px;
+}
+
+.card__nome, .card__senha {
+    width: 100%;
+    border: none;
+    margin: 1em 0;
+    background-color: #514869;
+    border-radius: 10px;
+    padding: 1em;
+    color: #f0ffffde;
+    box-shadow: 0px 10px 40px #00000056;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.card > input::placeholder {
+    color: #f0ffff94;
+}
+
+.card__botao {
+    width: 100%;
+    padding: 1em 0;
+    margin: 1.5em 0;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 3px;
+    background: #00ff88;
+    cursor: pointer;
+    box-shadow: 0px 10px 40px -12px #00ff8052;
+    transition: all 0.5s;
+}
+
+.card__botao:hover {
+    background: #66ffaa; 
+}
