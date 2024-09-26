@@ -1,6 +1,8 @@
 # Use a imagem oficial do Python no Ubuntu
 FROM ubuntu:20.04
 
+ENV NODE_VERSION=20.17.0
+
 # Definir o diretório de trabalho no contêiner
 WORKDIR /app
 
@@ -19,6 +21,17 @@ RUN apt-get update && \
 # Instalar o Python e dependências do projeto
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
+
+RUN apt install -y curl
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+ENV NVM_DIR=/root/.nvm
+ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
+RUN . "$NVM_DIR/nvm.sh" && nvm use ${NODE_VERSION}
+RUN . "$NVM_DIR/nvm.sh" && nvm alias default ${NODE_VERSION}
+
+# COPY package.json .
+# RUN . "$NVM_DIR/nvm.sh" && npm install
 
 # Copiar o código da aplicação
 COPY . .

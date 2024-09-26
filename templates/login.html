@@ -6,13 +6,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inknut+Antiqua:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../static/styles/login.css" />
+    <!-- <link rel="stylesheet" href="../static/src/styles/login.css" /> -->
+    {{ stylesheet_pack('app') }}
+    {{ javascript_pack('app', attrs='defer') }}
     <title>Login</title>
   </head>
   <body class="login">
     <div class="container">
       <main class="card">
-        <img class="logo" src="../static/icons/backbone.png">
+        <img class="logo" src="{{ url_for('static', filename='icons/backbone.png') }}">
         <div class="logo-blank"></div>
         <h1>Login</h1>
         <form method="post">
