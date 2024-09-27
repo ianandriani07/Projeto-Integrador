@@ -22,6 +22,7 @@ RUN apt-get update && \
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
+# Instalar NVM e Node.js
 RUN apt install -y curl
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
 ENV NVM_DIR=/root/.nvm
@@ -30,11 +31,14 @@ RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm use ${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm alias default ${NODE_VERSION}
 
-# COPY package.json .
-# RUN . "$NVM_DIR/nvm.sh" && npm install
-
-# Copiar o código da aplicação
+# Copiar arquivos do projeto para dentro do contêiner
 COPY . .
+
+# Instalar dependências do Node.js
+RUN . "$NVM_DIR/nvm.sh" && npm install
+
+# Rodar o build do Webpack
+RUN . "$NVM_DIR/nvm.sh" && npm run build
 
 # Variáveis de ambiente do Flask
 ENV FLASK_APP=app.py
