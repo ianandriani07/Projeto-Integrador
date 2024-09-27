@@ -12,17 +12,26 @@ module.exports = merge(common, {
   devtool: "inline-source-map",
   output: {
     chunkFilename: "js/[name].chunk.js",
-    publicPath: "http://localhost:9091/",
+    publicPath: "/",  // Certifique-se de que o Webpack serve os arquivos no root
   },
   devServer: {
+    static: {
+      directory: Path.resolve(__dirname, '../static/dist'),  // Diretório para servir os arquivos compilados
+      publicPath: "/static/",  // Alinhado com o Flask (garante que ele serve como o Flask espera)
+    },
     hot: true,
+    liveReload: true,  // Ativa o live-reload para alterações HTML
+    watchFiles: [
+      Path.resolve(__dirname, "../templates/**/*.html"),
+      Path.resolve(__dirname, "../src/**/*")
+    ],  // Observa mudanças nos templates e nos arquivos de fonte
     host: "0.0.0.0",
     port: 9091,
     headers: {
       "Access-Control-Allow-Origin": "*",
     },
     devMiddleware: {
-      writeToDisk: true,
+      writeToDisk: true,  // Garante que as alterações sejam escritas no disco para sincronização
     },
   },
   plugins: [

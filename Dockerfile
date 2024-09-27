@@ -37,15 +37,16 @@ COPY . .
 # Instalar dependências do Node.js
 RUN . "$NVM_DIR/nvm.sh" && npm install
 
-# Rodar o build do Webpack
-RUN . "$NVM_DIR/nvm.sh" && npm run build
-
-# Variáveis de ambiente do Flask
+# Configurar Flask para o modo de desenvolvimento e hot-reload de templates
 ENV FLASK_APP=app.py
-ENV FLASK_ENV=development 
+ENV FLASK_ENV=development
+ENV FLASK_DEBUG=1
 
-# Expor a porta 8000 para a aplicação Flask
-EXPOSE 8000
+# Configurar Flask para recarregar templates automaticamente
+ENV FLASK_RUN_RELOAD=true
 
-# Rodar o Flask
-CMD ["flask", "run", "--host=0.0.0.0", "--port=8000"]
+# Expor a porta 8000 para o Flask e 3000 para o Webpack Dev Server
+EXPOSE 8000 3000
+
+# Definir o comando padrão para rodar o npm run dev para desenvolvimento
+CMD bash -c ". \"$NVM_DIR/nvm.sh\" && npm run dev"

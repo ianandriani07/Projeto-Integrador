@@ -3,8 +3,12 @@ services:
   web:
     build: .
     volumes:
-      - .:/app
+      - .:/app  # Sincronizar arquivos locais com o contêiner para hot-reload
+      - /app/node_modules  # Evitar conflito de dependências
+      - /app/static/dist  # Sincroniza o diretório de compilação com Flask
     ports:
-      - "8000:8000"
+      - "8000:8000"  # Porta para o Flask
+      - "3000:3000"  # Porta para o Webpack Dev Server
     environment:
       - FLASK_ENV=development
+      - FLASK_DEBUG=1

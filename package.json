@@ -4,8 +4,15 @@
   "description": "Webpack boilerplate for Django & Flask",
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack --config static/webpack/webpack.config.prod.js",
-    "start": "webpack serve --config static/webpack/webpack.config.dev.js",
-    "watch": "webpack --watch --config static/webpack/webpack.config.watch.js"
+    "start": "webpack serve --config static/webpack/webpack.config.dev.js --host 0.0.0.0 --port 3000 --hot",
+    "watch": "webpack --watch --config static/webpack/webpack.config.watch.js",
+    "flask-start": "flask run --host=0.0.0.0 --port=8000",
+    "dev": "concurrently \"npm run watch\" \"npm run flask-start\"",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint 'static/src/**/*.js' --quiet",
+    "stylelint": "stylelint '**/*.scss'",
+    "fix:lint": "eslint 'static/src/**/*.js' --fix",
+    "fix:stylelint": "stylelint '**/*.scss' --fix"
   },
   "repository": {
     "type": "git",
@@ -29,6 +36,7 @@
     "@babel/preset-env": "^7.20.2",
     "babel-loader": "^9.1.2",
     "clean-webpack-plugin": "^4.0.0",
+    "concurrently": "^7.6.0",
     "copy-webpack-plugin": "^12.0.2",
     "cross-env": "^7.0.3",
     "css-loader": "^7.1.1",

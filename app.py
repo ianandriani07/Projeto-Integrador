@@ -11,6 +11,9 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 app.config["SECRET_KEY"] = "AgiotechDominandoOMundo"
 
+app.config['DEBUG'] = True
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+
 app.config.update(
     {
         "WEBPACK_LOADER": {
@@ -37,4 +40,4 @@ def webpack_init():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
+    app.run(host="0.0.0.0", port=8000, debug=True)
