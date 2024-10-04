@@ -34,12 +34,16 @@
 - Texto: O texto associado a uma pergunta
 - Caixa númerica: A caixa de entrada de números
 - Variavel de Associação: Uma variavel para associar os valores
+- Valor máximo (Opcional): Um valor máximo para uma pergunta númerica
+- Valor minimo (Opcional): Um valor minimo para uma pergunta númerica
 
 ## Pergunta Numérica com Intervalo: Requisitos
 - Texto: O texto associado a uma pergunta
 - Caixa númerica: A caixa de entrada de números
 - Intervalo: O intervalor associado ao valor númerico.
 - Variavel de Associação: Uma variavel para associar os valores
+- Valor máximo (Opcional): Um valor máximo para uma pergunta númerica
+- Valor minimo (Opcional): Um valor minimo para uma pergunta númerica
 
 ## Pergunta Textual: Requisitos
 - Texto: O texto associado a uma pergunta
