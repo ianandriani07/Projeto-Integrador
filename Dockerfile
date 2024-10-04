@@ -22,6 +22,7 @@ RUN apt-get update && \
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
+# Instalar NVM e Node.js
 RUN apt install -y curl
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
 ENV NVM_DIR=/root/.nvm
@@ -30,17 +31,22 @@ RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm use ${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm alias default ${NODE_VERSION}
 
-# COPY package.json .
-# RUN . "$NVM_DIR/nvm.sh" && npm install
-
-# Copiar o código da aplicação
+# Copiar arquivos do projeto para dentro do contêiner
 COPY . .
 
-# Variáveis de ambiente do Flask
+# Instalar dependências do Node.js
+RUN . "$NVM_DIR/nvm.sh" && npm install
+
+# Configurar Flask para o modo de desenvolvimento e hot-reload de templates
 ENV FLASK_APP=app.py
+ENV FLASK_ENV=development
+ENV FLASK_DEBUG=1
 
-# Expor a porta 8000 para a aplicação Flask
-EXPOSE 8000
+# Configurar Flask para recarregar templates automaticamente
+ENV FLASK_RUN_RELOAD=true
 
-# Rodar o Flask
-CMD ["flask", "run", "--host=0.0.0.0", "--port=8000"]
+# Expor a porta 8000 para o Flask e 3000 para o Webpack Dev Server
+EXPOSE 8000 3000
+
+# Definir o comando padrão para rodar o npm run dev para desenvolvimento
+CMD bash -c ". \"$NVM_DIR/nvm.sh\" && npm run dev"
