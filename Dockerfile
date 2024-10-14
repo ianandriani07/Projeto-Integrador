@@ -1,4 +1,18 @@
-# Use a imagem oficial do Python no Ubuntu
+# Fase 1: Node.js e Webpack para build dos assets
+FROM node:20 AS build
+
+# Definir o diretório de trabalho no contêiner
+WORKDIR /app
+
+# Copiar package.json e instalar dependências Node.js
+COPY package.json package-lock.json ./
+RUN npm install
+
+# Copiar todos os arquivos do projeto e rodar o build do Webpack
+COPY . .
+RUN npm run build
+
+# Fase 2: Flask e Python para rodar a aplicação
 FROM ubuntu:20.04
 
 ENV NODE_VERSION=20.17.0
@@ -22,31 +36,16 @@ RUN apt-get update && \
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Instalar NVM e Node.js
-RUN apt install -y curl
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
-ENV NVM_DIR=/root/.nvm
-ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
-RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
-RUN . "$NVM_DIR/nvm.sh" && nvm use ${NODE_VERSION}
-RUN . "$NVM_DIR/nvm.sh" && nvm alias default ${NODE_VERSION}
-
-# Copiar arquivos do projeto para dentro do contêiner
-COPY . .
-
-# Instalar dependências do Node.js
-RUN . "$NVM_DIR/nvm.sh" && npm install
+# Copiar apenas os arquivos gerados pelo Webpack da fase anterior
+COPY --from=build /app /app
 
 # Configurar Flask para o modo de desenvolvimento e hot-reload de templates
 ENV FLASK_APP=app.py
 ENV FLASK_ENV=development
 ENV FLASK_DEBUG=1
 
-# Configurar Flask para recarregar templates automaticamente
-ENV FLASK_RUN_RELOAD=true
+# Expor a porta 8000 para o Flask
+EXPOSE 8000
 
-# Expor a porta 8000 para o Flask e 3000 para o Webpack Dev Server
-EXPOSE 8000 3000
-
-# Definir o comando padrão para rodar o npm run dev para desenvolvimento
-CMD bash -c ". \"$NVM_DIR/nvm.sh\" && npm run dev"
+# Definir o comando padrão para rodar o Flask
+CMD ["flask", "run", "--host=0.0.0.0", "--port=8000"]

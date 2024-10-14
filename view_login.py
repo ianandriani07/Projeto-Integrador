@@ -9,10 +9,6 @@ from helpers import generate_bcrypt_password
 def load_user(user_id):
     return Usuarios.query.get(int(user_id))
 
-@app.route('/')
-def inicio():
-    return redirect(url_for('login'))
-
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if current_user.is_authenticated:

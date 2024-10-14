@@ -5,10 +5,20 @@ services:
     volumes:
       - .:/app  # Sincronizar arquivos locais com o contêiner para hot-reload
       - /app/node_modules  # Evitar conflito de dependências
-      - /app/static/dist  # Sincroniza o diretório de compilação com Flask
     ports:
       - "8000:8000"  # Porta para o Flask
-      - "3000:3000"  # Porta para o Webpack Dev Server
     environment:
       - FLASK_ENV=development
       - FLASK_DEBUG=1
+    command: flask run --host=0.0.0.0 --port=8000  # Comando para rodar o Flask
+
+  webpack:
+    build: .
+    volumes:
+      - .:/app  # Sincronizar arquivos locais com o contêiner para hot-reload
+      - /app/node_modules  # Evitar conflito de dependências
+    ports:
+      - "3000:3000"  # Porta para o Webpack Dev Server
+    environment:
+      - NODE_ENV=development
+    command: bash -c ". \"$NVM_DIR/nvm.sh\" && npm run watch"  # Rodar Webpack no modo watch

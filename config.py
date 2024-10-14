@@ -1,7 +1,7 @@
 import urllib.parse
 
 class Config(object):
-    SECRET_KEY = 'Extradigital'
+    SECRET_KEY = 'ForwardAI'
     
     # Formate corretamente a string de conexão com ODBC
     odbc_str = (
@@ -9,7 +9,7 @@ class Config(object):
         "Server=tcp:projetopi.database.windows.net,1433;"
         "Database=DB_FORMULARIOS;"
         "Uid=projetopi;"
-        "Pwd=Forw@rd123;"  # Substitua 'Teste' pela sua senha real
+        "Pwd=Forw@rd123;"
         "Encrypt=yes;"
         "TrustServerCertificate=no;"
         "Connection Timeout=30;"
