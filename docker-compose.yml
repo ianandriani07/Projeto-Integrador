@@ -23,4 +23,5 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
+      - WATCHPACK_POLLING=true
     command: bash -c "npm run watch"
