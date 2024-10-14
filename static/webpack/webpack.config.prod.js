@@ -18,7 +18,7 @@ module.exports = merge(common, {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.m?jsx?$/,
         exclude: /node_modules/,
         use: "babel-loader",
       },

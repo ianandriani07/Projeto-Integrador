@@ -17,9 +17,9 @@ module.exports = merge(common, {
     new Webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify("development"),
     }),
-    new StylelintPlugin({
-      files: Path.resolve(__dirname, "../src/**/*.s?(a|c)ss"),
-    }),
+    // new StylelintPlugin({
+    //   files: Path.resolve(__dirname, "../src/**/*.s?(a|c)ss"),
+    // }),
     new ESLintPlugin({
       extensions: "js",
       emitWarning: true,
@@ -33,7 +33,7 @@ module.exports = merge(common, {
         loader: "html-loader",
       },
       {
-        test: /\.js$/,
+        test: /\.m?jsx?$/,
         include: Path.resolve(__dirname, "../src"),
         loader: "babel-loader",
       },

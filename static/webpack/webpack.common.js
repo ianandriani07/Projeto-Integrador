@@ -8,7 +8,7 @@ const getEntryObject = () => {
   const entries = {};
   // for javascript/typescript entry file
   glob
-    .sync(Path.join(__dirname, "../src/application/*.{js,ts}"))
+    .sync(Path.join(__dirname, "../src/application/*.{mjs,js,ts,jsx}"))
     .forEach((path) => {
       const name = Path.basename(path);
       const extension = Path.extname(path);
@@ -63,7 +63,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.mjs$/,
+        test: /\.m?js$/,
         include: /node_modules/,
         type: "javascript/auto",
       },
