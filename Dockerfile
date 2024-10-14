@@ -20,7 +20,7 @@ ENV NODE_VERSION=20.17.0
 # Definir o diretório de trabalho no contêiner
 WORKDIR /app
 
-# Instala as dependências necessárias
+# Instalar dependências necessárias
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     python3-pip \
@@ -32,12 +32,28 @@ RUN apt-get update && \
     && curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list -o /etc/apt/sources.list.d/mssql-release.list \
     && apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql18
 
-# Instalar o Python e dependências do projeto
-COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
+# Instalar NVM e Node.js
+RUN apt install -y curl
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+
+# Configurar NVM_DIR e garantir que o NVM esteja disponível
+ENV NVM_DIR=/root/.nvm
+ENV PATH="/root/.nvm/versions/node/v$NODE_VERSION/bin/:$PATH"
+
+# Carregar NVM no ambiente do bash
+RUN echo "source $NVM_DIR/nvm.sh" >> /root/.bashrc
+
+# Instalar Node.js usando NVM
+RUN bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION"
+RUN bash -c "source $NVM_DIR/nvm.sh && nvm use $NODE_VERSION"
+RUN bash -c "source $NVM_DIR/nvm.sh && nvm alias default $NODE_VERSION"
 
 # Copiar apenas os arquivos gerados pelo Webpack da fase anterior
 COPY --from=build /app /app
+
+# Instalar as dependências Python do Flask
+COPY requirements.txt . 
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Configurar Flask para o modo de desenvolvimento e hot-reload de templates
 ENV FLASK_APP=app.py
