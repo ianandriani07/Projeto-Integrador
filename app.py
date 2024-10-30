@@ -29,7 +29,6 @@ login_manager.login_view = "login"
 from view_login import *
 from views import *
 
-
 @app.cli.command("webpack_init")
 def webpack_init():
     from cookiecutter.main import cookiecutter
@@ -37,7 +36,6 @@ def webpack_init():
 
     pkg_path = os.path.dirname(webpack_boilerplate.__file__)
     cookiecutter(pkg_path, directory="frontend_template")
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
