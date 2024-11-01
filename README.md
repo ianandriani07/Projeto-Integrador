@@ -24,3 +24,7 @@ docker-compose down
 
 # Quando utilizar 'docker-compose up'
 * **Alterações no código da aplicação**: Se você alterar apenas o código da aplicação (como arquivos **.py** para o Flask ou **.js/.scss** para o Webpack), e não fez mudanças no Dockerfile ou nas dependências, você pode rodar apenas **docker-compose up**. Como você configurou volumes no **docker-compose.yml**, essas mudanças no código serão refletidas automaticamente dentro do contêiner sem precisar reconstruí-lo.
+
+# Link para a documentação da API utilizada
+
+https://app.swaggerhub.com/apis-docs/IANDRIANI07/API_PI/1.0.0
