@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+const React = require('react');
+const { useState, useEffect } = React;
 
 function arrayToString(prefix, array) {
     let out = prefix;
@@ -13,7 +14,7 @@ function arrayToString(prefix, array) {
     return out.slice(0, -2);
 }
 
-export function ProjectCard({ name, students, coordinators }) {
+function ProjectCard({ name, students, coordinators }) {
     if (students === undefined) {
         students = [];
     }

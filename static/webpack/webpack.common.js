@@ -8,7 +8,7 @@ const getEntryObject = () => {
   const entries = {};
   // for javascript/typescript entry file
   glob
-    .sync(Path.join(__dirname, "../src/application/*.{mjs,js,ts,jsx}"))
+    .sync(Path.join(__dirname, "../src/application/*.{mjs,js,ts,jsx,tsx}"))
     .forEach((path) => {
       const name = Path.basename(path);
       const extension = Path.extname(path);
@@ -63,9 +63,11 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.m?js$/,
-        include: /node_modules/,
-        type: "javascript/auto",
+        test: /\.m?jsx?$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: "swc-loader"
+        }
       },
       {
         test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/,

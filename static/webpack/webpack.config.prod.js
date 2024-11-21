@@ -19,8 +19,10 @@ module.exports = merge(common, {
     rules: [
       {
         test: /\.m?jsx?$/,
-        exclude: /node_modules/,
-        use: "babel-loader",
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: "swc-loader"
+        }
       },
       {
         test: /\.s?css/i,

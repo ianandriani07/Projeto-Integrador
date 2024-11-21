@@ -35,7 +35,10 @@ module.exports = merge(common, {
       {
         test: /\.m?jsx?$/,
         include: Path.resolve(__dirname, "../src"),
-        loader: "babel-loader",
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: "swc-loader"
+        }
       },
       {
         test: /\.s?css$/i,

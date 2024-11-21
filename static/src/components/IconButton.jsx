@@ -1,7 +1,8 @@
-import "./styles/IconButtonStyle.scss";
-import React, { useState, useEffect } from 'react';
+require("./styles/IconButtonStyle.scss");
+const React = require('react');
+const { useState, useEffect } = React;
 
-export function IconButton({ iconPath, children, className, noDefaults = false }) {
+function IconButton({ iconPath, children, className, noDefaults = false }) {
     return (
         <>
             <button className={(!noDefaults ? "icon-button-align-icon " + className : className)}>

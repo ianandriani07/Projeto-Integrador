@@ -1,8 +1,8 @@
-import "../styles/hub.scss";
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { IconButton } from '../components/IconButton.jsx'
-import { ProjectCard } from '../components/ProjectCard.jsx'
+require("../styles/hub.scss");
+const React = require('react');
+const { createRoot } = require('react-dom/client');
+const { IconButton } = require('../components/IconButton.jsx');
+const { ProjectCard } = require('../components/ProjectCard.jsx')
 
 function Hub() {
     return (

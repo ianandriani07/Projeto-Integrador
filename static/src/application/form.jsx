@@ -1,6 +1,6 @@
-import "../styles/form.scss";
-import React from 'react';
-import { createRoot } from 'react-dom/client';
+require("../styles/form.scss");
+const React = require('react');
+const { createRoot } = require('react-dom/client');
 
 let test = [
     {
@@ -17,9 +17,13 @@ let test = [
     }
 ];
 
+function TextQuestion() {
+
+}
+
 function Form() {
     return (<>
-        <div className="white rounded-borders-20px card">
+        <div className="background-white rounded-borders-20px card">
             <h1>Test</h1>
         </div>
     </>);
