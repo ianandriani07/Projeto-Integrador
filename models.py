@@ -15,100 +15,61 @@ class Usuarios(db.Model, UserMixin):
     def get_id(self):
         return self.IdUsuario
 
-class Coordenadores(db.Model):
-    __tablename__ = 'Coordenadores'
-    ID = db.Column(db.Integer, primary_key=True)
-    IdUsuario = db.Column(db.Integer, db.ForeignKey('Usuarios.IdUsuario', ondelete="CASCADE"), nullable=False)
-    Nome = db.Column(db.String(100), nullable=False)
-
-    usuario = db.relationship('Usuarios', backref=db.backref('coordenador', uselist=False))
-
-class Alunos(db.Model):
-    __tablename__ = 'Alunos'
-    ID = db.Column(db.Integer, primary_key=True)
-    IdUsuario = db.Column(db.Integer, db.ForeignKey('Usuarios.IdUsuario', ondelete="CASCADE"), nullable=False)
-    Nome = db.Column(db.String(100), nullable=False)
-
-    usuario = db.relationship('Usuarios', backref=db.backref('aluno', uselist=False))
-
-class Projetos(db.Model):
-    __tablename__ = 'Projetos'
-    ID = db.Column(db.Integer, primary_key=True)
-    Nome = db.Column(db.String(100), nullable=False)
-    Descricao = db.Column(db.Text)
-    CoordenadorID = db.Column(db.Integer, db.ForeignKey('Coordenadores.ID', ondelete="SET NULL"))
-
-    coordenador = db.relationship('Coordenadores', backref='projetos')
-
 class Formularios(db.Model):
-    __tablename__ = 'Formularios'
-    ID = db.Column(db.Integer, primary_key=True)
-    ProjetoID = db.Column(db.Integer, db.ForeignKey('Projetos.ID', ondelete="CASCADE"), nullable=False)
-    CoordenadorID = db.Column(db.Integer, db.ForeignKey('Coordenadores.ID', ondelete="SET NULL"))
-    Nome = db.Column(db.String(100), nullable=False)
-    Descricao = db.Column(db.Text)
-    Formula = db.Column(db.Text)
+    __tablename__ = 'formularios'
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(255), nullable=False)
+    descricao = db.Column(db.Text)
+    data_criacao = db.Column(db.DateTime, default=db.func.current_timestamp())
+    ativo = db.Column(db.Boolean, default=True)
+    formula = db.Column(db.Text)  # Campo adicionado para armazenar a fórmula do formulário
 
-    projeto = db.relationship('Projetos', backref='formularios')
-    coordenador = db.relationship('Coordenadores', backref='formularios')
+    perguntas = db.relationship('Perguntas', backref='formulario', cascade='all, delete-orphan')
+
+class TiposPerguntas(db.Model):
+    __tablename__ = 'tipos_perguntas'
+    id = db.Column(db.Integer, primary_key=True)
+    descricao = db.Column(db.String(50), nullable=False)
+
+    perguntas = db.relationship('Perguntas', backref='tipo')
+
 
 class Perguntas(db.Model):
-    __tablename__ = 'Perguntas'
-    ID = db.Column(db.Integer, primary_key=True)
-    Tipo = db.Column(db.String(50), nullable=False)
-    Texto = db.Column(db.Text, nullable=False)
-    VariavelAssociacao = db.Column(db.String(50))
-    Formula = db.Column(db.Text)
+    __tablename__ = 'perguntas'
+    id = db.Column(db.Integer, primary_key=True)
+    id_formulario = db.Column(db.Integer, db.ForeignKey('formularios.id', ondelete="CASCADE"), nullable=False)
+    texto = db.Column(db.Text, nullable=False)
+    id_tipo = db.Column(db.Integer, db.ForeignKey('tipos_perguntas.id'), nullable=False)
+    ordem = db.Column(db.Integer)
+    obrigatoria = db.Column(db.Boolean, default=False)
+    nome_variavel = db.Column(db.String(50), nullable=False)  # Novo campo adicionado
 
-class FormularioPerguntas(db.Model):
-    __tablename__ = 'FormularioPerguntas'
-    ID = db.Column(db.Integer, primary_key=True)
-    FormularioID = db.Column(db.Integer, db.ForeignKey('Formularios.ID', ondelete="CASCADE"), nullable=False)
-    PerguntaID = db.Column(db.Integer, db.ForeignKey('Perguntas.ID', ondelete="CASCADE"), nullable=False)
+    opcoes = db.relationship('Opcoes', backref='pergunta', cascade='all, delete-orphan')
 
-    formulario = db.relationship('Formularios', backref='perguntas_associadas')
-    pergunta = db.relationship('Perguntas', backref='formularios_associados')
+class Opcoes(db.Model):
+    __tablename__ = 'opcoes'
+    id = db.Column(db.Integer, primary_key=True)
+    id_pergunta = db.Column(db.Integer, db.ForeignKey('perguntas.id', ondelete="CASCADE"), nullable=False)
+    texto = db.Column(db.String(255), nullable=False)
+    ordem = db.Column(db.Integer)
 
-class OpcaoPergunta(db.Model):
-    __tablename__ = 'OpcaoPergunta'
-    ID = db.Column(db.Integer, primary_key=True)
-    PerguntaID = db.Column(db.Integer, db.ForeignKey('Perguntas.ID', ondelete="CASCADE"), nullable=False)
-    OpcaoTexto = db.Column(db.String(50), nullable=False)
-    ValorNumerico = db.Column(db.Integer, nullable=False)
-
-    pergunta = db.relationship('Perguntas', backref='opcoes')
-
-class TiposReducao(db.Model):
-    __tablename__ = 'TiposReducao'
-    ID = db.Column(db.Integer, primary_key=True)
-    Descricao = db.Column(db.String(50), nullable=False)
-
-class Pacientes(db.Model):
-    __tablename__ = 'Pacientes'
-    ID = db.Column(db.Integer, primary_key=True)
-    IdentificadorUnico = db.Column(db.String(50), unique=True, nullable=False)
 
 class Respostas(db.Model):
-    __tablename__ = 'Respostas'
-    ID = db.Column(db.Integer, primary_key=True)
-    PerguntaID = db.Column(db.Integer, db.ForeignKey('Perguntas.ID', ondelete="CASCADE"), nullable=False)
-    PacienteID = db.Column(db.Integer, db.ForeignKey('Pacientes.ID', ondelete="CASCADE"), nullable=False)
-    RespostaTexto = db.Column(db.Text)
-    RespostaNumerica = db.Column(db.Integer)
-    RespostaOpcao = db.Column(db.Integer, db.ForeignKey('OpcaoPergunta.ID'))
-    ValorCalculado = db.Column(db.Float)
+    __tablename__ = 'respostas'
+    id = db.Column(db.Integer, primary_key=True)
+    id_formulario = db.Column(db.Integer, db.ForeignKey('formularios.id', ondelete="CASCADE"), nullable=False)
+    id_usuario = db.Column(db.Integer)  # Campo opcional para rastrear quem respondeu
+    data_resposta = db.Column(db.DateTime, default=db.func.current_timestamp())
 
-    pergunta = db.relationship('Perguntas', backref='respostas')
-    paciente = db.relationship('Pacientes', backref='respostas')
-    opcao = db.relationship('OpcaoPergunta', backref='respostas')
+    respostas_perguntas = db.relationship('RespostasPerguntas', backref='resposta', cascade='all, delete-orphan')
 
-class AlunoProjeto(db.Model):
-    __tablename__ = 'AlunoProjeto'
-    ID = db.Column(db.Integer, primary_key=True)
-    ProjetoID = db.Column(db.Integer, db.ForeignKey('Projetos.ID', ondelete="CASCADE"), nullable=False)
-    AlunoID = db.Column(db.Integer, db.ForeignKey('Alunos.ID', ondelete="CASCADE"), nullable=False)
-    DataAssociacao = db.Column(db.Date, default=db.func.current_date())
-    StatusParticipacao = db.Column(db.String(50), default='Ativo')
 
-    projeto = db.relationship('Projetos', backref='alunos')
-    aluno = db.relationship('Alunos', backref='projetos')
+class RespostasPerguntas(db.Model):
+    __tablename__ = 'respostas_perguntas'
+    id = db.Column(db.Integer, primary_key=True)
+    id_resposta = db.Column(db.Integer, db.ForeignKey('respostas.id', ondelete="CASCADE"), nullable=False)
+    id_pergunta = db.Column(db.Integer, db.ForeignKey('perguntas.id', ondelete="NO ACTION"), nullable=False)
+    resposta_texto = db.Column(db.Text)  # Para perguntas objetivas
+    id_opcao = db.Column(db.Integer, db.ForeignKey('opcoes.id'))  # Para perguntas de múltipla escolha
+
+    opcao = db.relationship('Opcoes', backref='respostas_perguntas')
