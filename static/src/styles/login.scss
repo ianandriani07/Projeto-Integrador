@@ -1,35 +1,13 @@
-* {
-    margin: 0;
-    padding: 0;
-    min-width: 0;
-    min-height: 0;
-}
+@use "base.scss";
 
-body, html {
-    position: relative;
-    height: 100%; 
-    z-index: -99;
-}
-
-.login {
-    background: linear-gradient(180deg, #FFFACD 0%, #FFA07A 70%);
-    
-    .container {
-        display: flex;
-        position: relative;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        z-index: -999;
-    }
-    
+#login {
     .card {
         position: relative;
         background-color: white;
         width: 47vh;
         text-align: center;
         padding: 2.5em 2em;
-    
+
         border-style: solid;
         border-radius: 20px;
         border-width: 3px;
@@ -45,33 +23,7 @@ body, html {
             line-height: normal;
             font-size: 40px;
         }
-    }
-    
-    .input-box {
-        width: 100%;
-        border: none;
-        margin: 1em 0;
-        background-color: #F2E8D9;
-        border-radius: 10px;
-        padding: 1em;
-        color: rgba($color: #000000, $alpha: 0.5);
-        // box-shadow: 0px 10px 40px #00000056;
-        outline: none;
-        box-sizing: border-box;
-        transition: box-shadow 0.5s;
 
-        font-size: 15px;
-
-        &:hover, &:focus {
-            -webkit-box-shadow: 0px 5px 12px -4px rgba(0,0,0,0.4);
-            -moz-box-shadow: 0px 5px 12px -4px rgba(0,0,0,0.4);
-            box-shadow: 0px 5px 12px -4px rgba(0,0,0,0.4);
-        }
-
-    }
-
-    .card {
-        z-index: -2;
         &>input::placeholder {
             color: transparent;
         }
@@ -87,18 +39,42 @@ body, html {
             line-height: normal;
         }
     }
-    
+
+    .input-box {
+        width: 100%;
+        border: none;
+        margin: 1em 0;
+        background-color: #F2E8D9;
+        border-radius: 10px;
+        padding: 1em;
+        color: rgba($color: #000000, $alpha: 0.5);
+        // box-shadow: 0px 10px 40px #00000056;
+        outline: none;
+        box-sizing: border-box;
+        transition: box-shadow 0.5s;
+
+        font-size: 15px;
+
+        &:hover,
+        &:focus {
+            -webkit-box-shadow: 0px 5px 12px -4px rgba(0, 0, 0, 0.4);
+            -moz-box-shadow: 0px 5px 12px -4px rgba(0, 0, 0, 0.4);
+            box-shadow: 0px 5px 12px -4px rgba(0, 0, 0, 0.4);
+        }
+
+    }
+
     .login-button {
         width: 100%;
         padding: 5px 0;
         margin: 1.5em 0;
         outline: none;
         text-transform: uppercase;
-        
-        
+
+
         background-color: #F7F9F9;
         color: rgba(0, 65, 61, 0.75);
-        
+
         text-align: center;
         font-family: "Inknut Antiqua";
         font-size: 15px;
@@ -109,7 +85,7 @@ body, html {
         transition: filter 0.2s;
         transition: box-shadow 0.5s;
         cursor: pointer;
-        
+
         border-width: 10px;
         border-color: #EDE1CD;
         border-style: solid;
@@ -117,34 +93,23 @@ body, html {
 
         &:hover {
             filter: grayscale(0.8);
-            -webkit-box-shadow: 0px 5px 12px -4px rgba(0,0,0,0.4);
-            -moz-box-shadow: 0px 5px 12px -4px rgba(0,0,0,0.4);
-            box-shadow: 0px 5px 12px -4px rgba(0,0,0,0.4);
+            -webkit-box-shadow: 0px 5px 12px -4px rgba(0, 0, 0, 0.4);
+            -moz-box-shadow: 0px 5px 12px -4px rgba(0, 0, 0, 0.4);
+            box-shadow: 0px 5px 12px -4px rgba(0, 0, 0, 0.4);
         }
     }
 
     $logo-width: 14vh;
+
     .logo {
         position: absolute;
         bottom: 90%;
         left: calc(50% - ($logo-width / 2) - 3px);
         width: $logo-width;
-
-        // img::after {
-        //     content: '';
-        //     display: block;
-        //     position: absolute;
-        //     top: 0;
-        //     right: 0;
-        //     width: 100%;
-        //     height: 100%;
-        //     background-color: #33fbb8;
-        //     z-index: 99;
-        //     visibility: visible;
-        // }
+        z-index: 2;
     }
 
-    .logo + .logo-blank {
+    .logo+.logo-blank {
         position: absolute;
         bottom: 94%;
         left: calc(50% - ($logo-width / 2) + 1px);
@@ -153,6 +118,6 @@ body, html {
         height: $logo-width - 1;
         border-radius: 50%;
         background-color: white;
-        z-index: -1;
+        z-index: 1;
     }
 }
