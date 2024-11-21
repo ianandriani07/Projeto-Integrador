@@ -11,6 +11,10 @@ def inicio():
 def hub():
     return render_template('hub.html')
 
+@app.route('/form', methods=['GET'])
+def project():
+    return render_template('form.html')
+
 @app.route('/criar-formulario', methods=['POST'])
 def criar_formulario():
     
