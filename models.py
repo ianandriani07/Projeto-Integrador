@@ -52,7 +52,7 @@ class Opcoes(db.Model):
     id_pergunta = db.Column(db.Integer, db.ForeignKey('perguntas.id', ondelete="CASCADE"), nullable=False)
     texto = db.Column(db.String(255), nullable=False)
     ordem = db.Column(db.Integer)
-
+    pontuacao = db.Column(db.Integer, nullable=False, default=0)  
 
 class Respostas(db.Model):
     __tablename__ = 'respostas'

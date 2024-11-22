@@ -24,6 +24,13 @@ def criar_formulario():
         if 'titulo' not in data or not data['titulo']:
             return jsonify({"erro": "O campo 'titulo' é obrigatório."}), 400
         
+        titulo = data['titulo']
+        if not verificar_titulo_formulario_existente(titulo):
+            return jsonify({
+                "status": False,
+                "erro": "titulo de formulário já existente."
+            }), 400
+        
         formulario = Formularios(
             titulo=data['titulo'],
             descricao=data.get('descricao'),  # Opcional
@@ -102,7 +109,7 @@ def listar_formulario(id_formulario):
             }
         ), 500
         
-@app.route('/criar-pergunta/', methods=['POST'])
+@app.route('/criar-pergunta', methods=['POST'])
 def criar_perguntas():
     try:
         data = request.json
@@ -144,7 +151,7 @@ def criar_perguntas():
             id_formulario = id_formulario,
             texto = data['texto'],
             id_tipo = id_tipo,
-            ordem = data['ordem'] if 'ordem' in data else get_max_ordem(),
+            ordem = data['ordem'] if 'ordem' in data else get_max_ordem()+1,
             nome_variavel = nome_variavel
         )
         
@@ -157,6 +164,217 @@ def criar_perguntas():
                 "mensagem": "Pergunta criada com sucesso!"
             }
         ), 201
+        
+    except Exception as e:
+        return jsonify({
+            "status": False,
+            "erro": str(e)
+        }), 500
+        
+@app.route('/perguntas/formulario/<int:id_formulario>')
+def listar_perguntas_formulario(id_formulario):
+    try:
+        # Verifica se o formulário existe
+        if not verificar_id_formulario(id_formulario):
+            return jsonify({
+                "status": False,
+                "erro": "O formulário com o ID fornecido não existe."
+            }), 404
+
+        # Parâmetros de paginação
+        pagina = request.args.get('pagina', 1, type=int)  # Página atual (padrão 1)
+        por_pagina = request.args.get('por_pagina', 5, type=int)  # Itens por página (padrão 5)
+
+        # Consulta com order_by para evitar erro no SQL Server
+        perguntas_paginated = Perguntas.query.filter_by(id_formulario=id_formulario)\
+            .order_by(Perguntas.ordem)\
+            .paginate(page=pagina, per_page=por_pagina, error_out=False)
+
+        # Lista de perguntas paginadas
+        perguntas = perguntas_paginated.items
+
+        # IDs das perguntas para buscar as opções
+        id_perguntas = [pergunta.id for pergunta in perguntas]
+        opcoes = Opcoes.query.filter(Opcoes.id_pergunta.in_(id_perguntas)).order_by(Opcoes.ordem).all()
+
+        # Organiza as opções por id_pergunta
+        opcoes_por_pergunta = {}
+        for opcao in opcoes:
+            if opcao.id_pergunta not in opcoes_por_pergunta:
+                opcoes_por_pergunta[opcao.id_pergunta] = []
+            opcoes_por_pergunta[opcao.id_pergunta].append(opcao)
+
+        # Monta o resultado paginado
+        resultado = []
+        for pergunta in perguntas:
+            id_pergunta = pergunta.id
+            opcoes = opcoes_por_pergunta.get(id_pergunta, [])
+
+            tabela_conversao = {opcao.texto: opcao.pontuacao for opcao in opcoes}
+            lista_opcoes = [
+                {
+                    "id": opcao.id,
+                    "texto": opcao.texto,
+                    "ordem": opcao.ordem,
+                    "pontuacao": opcao.pontuacao
+                }
+                for opcao in opcoes
+            ]
+
+            resultado.append({
+                "id": id_pergunta,
+                "id_formulario": pergunta.id_formulario,
+                "texto": pergunta.texto,
+                "tipo": get_descricao_tipo(pergunta.id_tipo),
+                "ordem": pergunta.ordem,
+                "obrigatoria": pergunta.obrigatoria,
+                "nome_variavel": pergunta.nome_variavel,
+                "opcoes": lista_opcoes,
+                "tabela_conversao": tabela_conversao
+            })
+
+        # Retorna o JSON com paginação
+        return jsonify({
+            "id_formulario": id_formulario,
+            "pagina_atual": pagina,
+            "total_paginas": perguntas_paginated.pages,
+            "total_registros": perguntas_paginated.total,
+            "perguntas": resultado
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "status": False,
+            "erro": str(e)
+        }), 500
+
+@app.route('/criar-opcoes', methods=['POST'])
+def criar_opcoes():
+    try:
+        # Obtém o JSON enviado
+        data = request.json
+
+        # Validação inicial dos campos principais
+        campos = ['id_pergunta', 'opcoes']
+        campos_faltando = [campo for campo in campos if campo not in data or data[campo] is None]
+
+        if campos_faltando:
+            return jsonify({
+                "status": False,
+                "erro": f"Os seguintes campos estão faltando ou nulos: {', '.join(campos_faltando)}"
+            }), 400
+
+        id_pergunta = data['id_pergunta']
+
+        # Verifica se o id_pergunta existe
+        if not verificar_id_pergunta(id_pergunta):
+            return jsonify({
+                "status": False,
+                "erro": "O campo 'id_pergunta' não corresponde a uma pergunta existente."
+            }), 400
+        else:
+            if verifica_opcoes_perguntas(id_pergunta):
+               return jsonify({
+                   "status": False,
+                   "erro": "Já existem opcoes associadas a essa pergunta."
+               }) 
+
+        opcoes = data['opcoes']
+
+        # Valida se há ao menos uma opção
+        if not isinstance(opcoes, list) or len(opcoes) < 1:
+            return jsonify({
+                "status": False,
+                "erro": "O campo 'opcoes' deve conter ao menos uma opção."
+            }), 400
+
+        # Lista de campos obrigatórios para cada opção
+        campos_opcoes = ['texto', 'ordem', 'pontuacao']
+        erros_opcoes = []
+
+        # Valida cada opção na lista de opcoes
+        for i, opcao in enumerate(opcoes):
+            faltando = [campo for campo in campos_opcoes if campo not in opcao or opcao[campo] is None]
+            if faltando:
+                erros_opcoes.append({
+                    "opcao": i + 1,  # Posição da opção (começando de 1 para ser mais intuitivo)
+                    "problema": "Campo(s) faltando",
+                    "campos_faltando": faltando
+                })
+            elif not isinstance(opcao.get('pontuacao'), (int, float)):
+                erros_opcoes.append({
+                    "opcao": i + 1,
+                    "problema": "O campo 'pontuacao' deve ser um número inteiro ou float."
+                })
+            elif not isinstance(opcao.get('ordem'), int):
+                erros_opcoes.append({
+                    "opcao": i + 1,
+                    "problema": "O campo 'ordem' deve ser um número inteiro."
+                })
+
+        # Retorna erro se alguma opção estiver inválida
+        if erros_opcoes:
+            return jsonify({
+                "status": False,
+                "erro": "Algumas opções têm problemas de validação.",
+                "detalhes": erros_opcoes
+            }), 400
+
+        # Adiciona as opções ao banco de dados
+        for opcao in opcoes:
+            nova_opcao = Opcoes(
+                id_pergunta=id_pergunta,
+                texto=opcao['texto'],
+                ordem=opcao['ordem'],
+                pontuacao=opcao['pontuacao']
+            )
+            db.session.add(nova_opcao)
+
+        # Confirma a transação no banco
+        db.session.commit()
+
+        # Resposta de sucesso
+        return jsonify({
+            "status": True,
+            "mensagem": "Opções criadas com sucesso!"
+        }), 201
+
+    except Exception as e:
+        # Rollback em caso de erro para evitar inconsistências no banco
+        db.session.rollback()
+        return jsonify({
+            "status": False,
+            "erro": str(e)
+        }), 500
+        
+@app.route('/opcoes/pergunta/<int:id_pergunta>')
+def listar_opcoes_perguntas(id_pergunta):
+    try:
+        if not verificar_id_pergunta(id_pergunta):
+            return jsonify({
+                "status": False,
+                "erro": "A pergunta com o ID fornecido não existe."
+            }), 404
+        
+        opcoes = Opcoes.query.filter_by(id_pergunta=id_pergunta).order_by(Opcoes.ordem).all()
+        
+        tabela_conversao = {opcao.texto: opcao.pontuacao for opcao in opcoes}
+        
+        lista_opcoes = [
+            {
+                "id": opcao.id,
+                "texto": opcao.texto,
+                "ordem": opcao.ordem,
+                "pontuacao": opcao.pontuacao
+            } 
+            for opcao in opcoes
+        ]
+
+        return jsonify({
+            "id_pergunta": id_pergunta,
+            "tabela_conversao": tabela_conversao,
+            "opcoes": lista_opcoes
+        }), 200
         
     except Exception as e:
         return jsonify({

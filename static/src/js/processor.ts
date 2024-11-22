@@ -120,7 +120,6 @@ export class Processor {
         }
 
         formula = Processor.#preProcess(formula);
-        console.log(formula);
 
         try {
             const world_obj = this.variables;

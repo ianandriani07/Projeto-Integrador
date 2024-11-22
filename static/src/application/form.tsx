@@ -283,8 +283,8 @@ let test = {
 			"tipo": "objetiva"
 		},
 		{
-			"texto": "",
-			"formula": "",
+			"texto": "Resultado",
+			"formula": "forca + ajuda_caminhar + levantar_cadeira + subir_escadas + quedas + cp >= 11",
 			"tipo": "formula"
 		}
 	],
@@ -296,7 +296,7 @@ function JSONRender({ json, processor }: RenderJSON) {
 
 	json.perguntas.forEach((question) => {
 		switch (question.tipo) {
-			case QuestionType.SingleCategoricalQuestion:
+			case 'objetiva' as QuestionType:
 				{
 					const q = question as SingleCategoricalQuestionJSON;
 					rendered.push((
@@ -307,11 +307,13 @@ function JSONRender({ json, processor }: RenderJSON) {
 					id += q.opcoes.length;
 				}
 				break;
-			case QuestionType.Formula:
+			case "formula" as QuestionType:
 				{
 					let q = question as FormulaQuestionJSON;
 					rendered.push(
-						<FormulaQuestion text={q.texto} formula={q.formula} process={processor} />
+						(
+							<FormulaQuestion text={q.texto} formula={q.formula} process={processor} />
+						)
 					);
 				}
 				break;
@@ -354,7 +356,7 @@ function SingleCategoricalQuestion({ id, varName, text, necessary, options, conv
 		optionsEl.push(
 			(
 				<div key={i}>
-					<input id={varName + (id + i).toString()} type="radio" onChange={() => { setIdChecked(id + i); processor.addVariable(varName, text, varName) }} checked={idChecked == (id + i)}></input>
+					<input id={varName + (id + i).toString()} type="radio" onChange={() => { setIdChecked(id + i); processor.addVariable(varName, op.texto, varName) }} checked={idChecked == (id + i)}></input>
 					<label htmlFor={varName + (id + i).toString()}>{op.texto}</label>
 				</div >
 			)
@@ -436,12 +438,14 @@ function Form() {
 		} else {
 			alias = "";
 		}
-
+		
 		let aliasedTable = {};
-
+		
 		for (const property in table) {
 			aliasedTable[alias + property] = table[property];
 		}
+		
+		console.log(aliasedTable);
 
 		processor.addTable(aliasedTable);
 	}
