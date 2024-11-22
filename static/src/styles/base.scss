@@ -3,11 +3,16 @@
     padding: 0;
     min-width: 0;
     min-height: 0;
+
+    font-family: "Noto Sans";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
 }
 
 html {
-    background: linear-gradient(180deg, rgba(255, 250, 205, 0.85) 0%, rgba(255, 160, 122, 0.85) 24.46%) no-repeat;
-    width: 100vw;
+    background: linear-gradient(180deg, rgba(255, 250, 205, 0.85) 0%, rgba(255, 160, 122, 0.85) 24.46%) no-repeat fixed;
     height: 100vh;
 }
 
@@ -28,7 +33,7 @@ body {
 }
 
 .full {
-    width: 100vw;
+    // width: 100vw;
     height: 100vh;
 }
 
