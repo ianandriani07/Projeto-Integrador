@@ -1,15 +1,29 @@
-const seRegexes = {
+const seRegex = {
     'equal': /((?:\W+|^)se\(.+?)\=+(.+?,.+?\))/g,
     'or': /((?:\W+|^)se\(.+?)ou(.+?,.+?\))/g,
     'and': /((?:\W+|^)se\(.+?)e(.+?,.+?\))/g,
     'seReplace': /(\W+|^)se(\(.+?\))/g
 };
 
-const preProcessor = [(formula) => {
-    formula = formula.replace(seRegexes.equal, "$1==$2").replace(seRegexes.or, "$1||$2").replace(seRegexes.and, "$1&&$2")
-        .replace(seRegexes.seReplace, "$1DefaultFunctions.se$2");
-    return formula;
-}];
+const ignoreFunctionsRegex = {
+    'fetch': /(\W+|^)fetch(\(.*?\))/g,
+    'eval': /(\W+|^)eval(\(.*?\))/g,
+    'ignoreFunctionsRegex': /(\W+|^)ignoreFunctionsRegex(\w|[.()])*/g,
+}
+
+const preProcessor = [
+    (formula) => {
+        Object.values(ignoreFunctionsRegex).forEach((reg) => {
+            formula = formula.replace(reg, '');
+        });
+        return formula;
+    },
+    (formula) => {
+        formula = formula.replace(seRegex.equal, "$1==$2").replace(seRegex.or, "$1||$2").replace(seRegex.and, "$1&&$2")
+            .replace(seRegex.seReplace, "$1DefaultFunctions.se$2");
+        return formula;
+    }
+];
 
 class DefaultFunctions {
     static se(condition, on_true, on_false) {
@@ -33,7 +47,7 @@ class Processor {
         return formula;
     }
 
-    static #replace_variables(variables, formula) {
+    static #replaceVariables(variables, formula) {
         let out = formula;
         variables.forEach((variable) => {
             out = out.replaceAll(variable, `world_obj.${variable}`);
@@ -102,7 +116,7 @@ class Processor {
 
         try {
             const world_obj = this.variables;
-            return eval(Processor.#replace_variables(variables_name, formula));
+            return eval(Processor.#replaceVariables(variables_name, formula));
         } catch {
             return 0;
         }
