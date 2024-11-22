@@ -63,7 +63,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.[mc]?jsx?$/,
+        test: /\.[mc]?[jt]sx?$/,
         exclude: /(node_modules|bower_components)/,
         use: {
           loader: "swc-loader"

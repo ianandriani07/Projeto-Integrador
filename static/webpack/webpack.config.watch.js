@@ -33,7 +33,7 @@ module.exports = merge(common, {
         loader: "html-loader",
       },
       {
-        test: /\.[mc]?jsx?$/,
+        test: /\.[mc]?[jt]sx?$/,
         include: Path.resolve(__dirname, "../src"),
         exclude: /(node_modules|bower_components)/,
         use: {
