@@ -14,7 +14,7 @@ function arrayToString(prefix, array) {
     return out.slice(0, -2);
 }
 
-function ProjectCard({ name, students, coordinators }) {
+export function ProjectCard({ name, students, coordinators }) {
     if (students === undefined) {
         students = [];
     }

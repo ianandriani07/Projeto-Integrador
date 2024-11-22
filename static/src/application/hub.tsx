@@ -1,17 +1,14 @@
-require("../styles/hub.scss");
+import "../styles/hub.scss";
 const React = require('react');
 const { createRoot } = require('react-dom/client');
-const { IconButton } = require('../components/IconButton.jsx');
-const { ProjectCard } = require('../components/ProjectCard.jsx')
+import { IconButton } from '../components/IconButton.tsx';
+import { ProjectCard } from '../components/ProjectCard.tsx';
+import { Header } from "../components/Header.tsx";
 
 function Hub() {
     return (
         <>
-            <button className="no-style logout-button" iconPath={'no.png'}><span>&#10005;</span>Logout</button>
-            <div className="align-in-row-left">
-                <img className="logo" src="/static/icons/backbone.png" />
-                <h1 className="title">Bem Vindo “Usuario”</h1>
-            </div>
+            <Header title='Bem Vindo “Usuario”'></Header>
             <nav>
                 <IconButton className="no-style hub-icon-button" iconPath={"/static/icons/torso.svg"}>Adicionar Usuario</IconButton>
                 <IconButton className="no-style hub-icon-button" iconPath={"/static/icons/plus.svg"}>Adicionar Projeto</IconButton>
