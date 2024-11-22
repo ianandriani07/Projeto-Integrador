@@ -87,6 +87,12 @@ export class Processor {
         }
     }
 
+    addVariables(variables: Object) {
+        for (const variable in variables) {
+            this.addVariable(variables, variables[variable]);
+        }
+    }
+
     clearVariables() {
         this.variables = {};
     }

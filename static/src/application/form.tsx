@@ -5,11 +5,14 @@ import { Header } from "../components/Header.tsx";
 import { Processor, DefaultFunctions } from "../js/processor.ts";
 
 interface ProcessorFunctions {
-	addVariable: (varName: string, value: any) => void,
+	addVariable: (varName: string, value: any, aliasValue?: string) => void,
+	addTable: (table: Object, alias?: string) => void,
+	execute: (formula: string) => number,
 }
 
 enum QuestionType {
 	SingleCategoricalQuestion = 'objetva',
+	Formula = "formula",
 }
 
 interface Option {
@@ -19,21 +22,23 @@ interface Option {
 	texto: string
 }
 
-interface ObjectiveQuestion {
+interface SingleCategoryQuestionType {
 	id: number,
 	varName: string,
 	text: string,
 	necessary: boolean,
 	options: Array<Option>,
+	conversionTable: Object,
+	processor: ProcessorFunctions
 }
 
-interface FormulaQuestion {
+interface FormulaQuestionType {
 	text: string,
 	formula: string,
-	process: Processor
+	process: ProcessorFunctions
 }
 
-interface PerguntaCategorica {
+interface SingleCategoricalQuestionJSON {
 	id: number,
 	id_formulario: number,
 	nome_variavel: string,
@@ -45,12 +50,23 @@ interface PerguntaCategorica {
 	tipo: QuestionType
 }
 
-interface RenderJSON {
+interface FormulaQuestionJSON {
+	texto: string,
+	formula: string,
+	tipo: QuestionType
+}
+
+interface FormJSON {
 	id_formulario: number,
 	pagina_atual: number,
 	total_paginas: number,
 	total_registros: number,
-	perguntas: Array<PerguntaCategorica>
+	perguntas: Array<SingleCategoricalQuestionJSON | FormulaQuestionJSON>
+}
+
+interface RenderJSON {
+	json: FormJSON,
+	processor: ProcessorFunctions
 }
 
 let test = {
@@ -265,18 +281,39 @@ let test = {
 			},
 			"texto": "Qual valor da Circunferência da Panturrilha?",
 			"tipo": "objetiva"
+		},
+		{
+			"texto": "",
+			"formula": "",
+			"tipo": "formula"
 		}
 	],
 };
 
-function JSONRender({ json }: { json: RenderJSON }) {
-	let rendered = []
+function JSONRender({ json, processor }: RenderJSON) {
+	let rendered: Array<Element> = [];
+	let id = 0;
+
 	json.perguntas.forEach((question) => {
 		switch (question.tipo) {
 			case QuestionType.SingleCategoricalQuestion:
-				rendered.push((
-					
-				));
+				{
+					const q = question as SingleCategoricalQuestionJSON;
+					rendered.push((
+						<SingleCategoricalQuestion id={id} necessary={q.obrigatoria}
+							options={q.opcoes} processor={processor} text={question.texto}
+							varName={q.nome_variavel} conversionTable={q.tabela_conversao} />
+					));
+					id += q.opcoes.length;
+				}
+				break;
+			case QuestionType.Formula:
+				{
+					let q = question as FormulaQuestionJSON;
+					rendered.push(
+						<FormulaQuestion text={q.texto} formula={q.formula} process={processor} />
+					);
+				}
 				break;
 		}
 	});
@@ -306,16 +343,18 @@ function NumericQuestion({ text }: { text: string }) {
 	);
 }
 
-function SingleCategoricalQuestion({ id, varName, text, necessary, options, addVariable }: ObjectiveQuestion) {
+function SingleCategoricalQuestion({ id, varName, text, necessary, options, conversionTable, processor }: SingleCategoryQuestionType): Element {
 
 	let optionsEl: Array<Element> = [];
 	let [idChecked, setIdChecked] = useState(id);
+
+	processor.addTable(conversionTable, varName);
 
 	options.forEach((op, i) => {
 		optionsEl.push(
 			(
 				<div key={i}>
-					<input id={varName + (id + i).toString()} type="radio" onChange={() => { setIdChecked(id + i); addVariable(varName, text) }} checked={idChecked == (id + i)}></input>
+					<input id={varName + (id + i).toString()} type="radio" onChange={() => { setIdChecked(id + i); processor.addVariable(varName, text, varName) }} checked={idChecked == (id + i)}></input>
 					<label htmlFor={varName + (id + i).toString()}>{op.texto}</label>
 				</div >
 			)
@@ -366,10 +405,10 @@ function MultipleCategoricalQuestion({ id, text }: { id: number, text: string })
 	);
 }
 
-function Formula({ text, formula, process }: FormulaQuestion) {
+function FormulaQuestion({ text, formula, process }: FormulaQuestionType) {
 	return (
 		<div className="card force-shorter">
-			<p>{text}: {process.exec(formula)}</p>
+			<p>{text}: {process.execute(formula)}</p>
 		</div>
 	);
 }
@@ -378,13 +417,44 @@ function Form() {
 	let categoryId = -1;
 	const processor = new Processor();
 
-	const addVarialble = (varName: string, value: any) => {
-		processor.addVariable(varName, value);
+	const [worldObj, setWorldObj] = useState({});
+
+	const addVarialble = (varName: string, value: any, aliasValue?: string) => {
+		if (aliasValue != undefined) {
+			value = aliasValue + "." + value;
+		}
+
+		let temp = Object.assign({}, worldObj);
+		temp[varName] = value;
+
+		setWorldObj(temp);
+	};
+
+	const addTable = (table: Object, alias?: string) => {
+		if (alias != undefined) {
+			alias = alias + ".";
+		} else {
+			alias = "";
+		}
+
+		let aliasedTable = {};
+
+		for (const property in table) {
+			aliasedTable[alias + property] = table[property];
+		}
+
+		processor.addTable(aliasedTable);
+	}
+
+	const execute = (formula: string): number => {
+		processor.addVariables(worldObj);
+		return processor.exec(formula);
 	};
 
 	return (<>
 		<Header />
 		<div className="questions-field align-in-column">
+			<JSONRender json={test as FormJSON} processor={{'addVariable': addVarialble, 'addTable': addTable, 'execute': execute}}/>
 		</div>
 	</>);
 }
