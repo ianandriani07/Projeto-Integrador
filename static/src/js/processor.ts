@@ -1,8 +1,8 @@
 const seRegex = {
-    'equal': /((?:\W+|^)se\(.+?)\=+(.+?,.+?\))/g,
-    'or': /((?:\W+|^)se\(.+?)ou(.+?,.+?\))/g,
-    'and': /((?:\W+|^)se\(.+?)e(.+?,.+?\))/g,
-    'seReplace': /(\W+|^)se(\(.+?\))/g
+    'equal': /(\W+?)(?<![<>])=+(\W+)/g,
+    'or': /(\W+)ou(\W+)/g,
+    'and': /(\W+)e(\W+)/g,
+    'seReplace': /(\W+|^)se(\()/g
 };
 
 const ignoreFunctionsRegex = {
@@ -58,9 +58,9 @@ export class Processor {
         return out;
     }
 
-    #convertValueToString(variable, value) {
-        if (variable in this.conversion_table) {
-            return this.conversion_table[variable][value];
+    #convertValueToString(value) {
+        if (value in this.conversion_table) {
+            return this.conversion_table[value];
         }
 
         let output = parseInt(value);
@@ -78,7 +78,7 @@ export class Processor {
 
     addVariable(variable, value) {
         if (typeof value === 'string') {
-            this.variables[variable] = this.#convertValueToString(variable, value);
+            this.variables[variable] = this.#convertValueToString(value);
         } else if (typeof value === 'number') {
             this.variables[variable] = value;
         } else {
@@ -89,7 +89,7 @@ export class Processor {
 
     addVariables(variables: Object) {
         for (const variable in variables) {
-            this.addVariable(variables, variables[variable]);
+            this.addVariable(variable, variables[variable]);
         }
     }
 
@@ -112,7 +112,6 @@ export class Processor {
     }
 
     exec(formula) {
-        formula = formula.replaceAll(' ', '');
         const variables_name = Object.keys(this.variables);
 
         if (variables_name.length == 0 || !formula) {
@@ -120,10 +119,11 @@ export class Processor {
         }
 
         formula = Processor.#preProcess(formula);
+        formula = formula.replaceAll(' ', '');
 
         try {
             const world_obj = this.variables;
-            return eval(Processor.#replaceVariables(variables_name, formula));
+            return Number(eval(Processor.#replaceVariables(variables_name, formula)));
         } catch {
             return 0;
         }

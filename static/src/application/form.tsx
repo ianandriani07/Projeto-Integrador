@@ -8,11 +8,13 @@ interface ProcessorFunctions {
 	addVariable: (varName: string, value: any, aliasValue?: string) => void,
 	addTable: (table: Object, alias?: string) => void,
 	execute: (formula: string) => number,
+	init: (varName: string, value: any, aliasValue?: string) => void,
 }
 
 enum QuestionType {
 	SingleCategoricalQuestion = 'objetva',
 	Formula = "formula",
+	Numeric = 'numerica',
 }
 
 interface Option {
@@ -71,6 +73,33 @@ interface RenderJSON {
 
 let test = {
 	"perguntas": [
+		{
+			"id": 4,
+			"id_formulario": 1,
+			"nome_variavel": "sexo",
+			"obrigatoria": false,
+			"opcoes": [
+				{
+					"id": 7,
+					"ordem": 1,
+					"pontuacao": 0,
+					"texto": "Homem"
+				},
+				{
+					"id": 8,
+					"ordem": 2,
+					"pontuacao": 1,
+					"texto": "Mulher"
+				}
+			],
+			"ordem": 1,
+			"tabela_conversao": {
+				"Homem": 0,
+				"Mulher": 1,
+			},
+			"texto": "Sexo?",
+			"tipo": "objetiva"
+		},
 		{
 			"id": 4,
 			"id_formulario": 1,
@@ -250,45 +279,40 @@ let test = {
 				{
 					"id": 22,
 					"ordem": 1,
-					"pontuacao": 0,
-					"texto": " Mulher e CP > 33cm"
+					"texto": "CP <= 33cm"
 				},
 				{
 					"id": 23,
 					"ordem": 2,
-					"pontuacao": 10,
-					"texto": "Mulher e CP <= 33cm"
+					"texto": "33cm < CP <= 34cm"
 				},
 				{
 					"id": 24,
 					"ordem": 3,
-					"pontuacao": 0,
-					"texto": "Homens e CP > 34cm"
+					"texto": "CP > 34cm"
 				},
-				{
-					"id": 25,
-					"ordem": 4,
-					"pontuacao": 10,
-					"texto": "Homens e CP <= 34cm"
-				}
 			],
 			"ordem": 6,
 			"tabela_conversao": {
-				" Mulher e CP > 33cm": 0,
-				"Homens e CP <= 34cm": 10,
-				"Homens e CP > 34cm": 0,
-				"Mulher e CP <= 33cm": 10
+				"CP <= 33cm": 0,
+				"33cm < CP <= 34cm": 1,
+				"CP > 34cm": 2,
 			},
 			"texto": "Qual valor da Circunferência da Panturrilha?",
 			"tipo": "objetiva"
 		},
 		{
 			"texto": "Resultado",
-			"formula": "forca + ajuda_caminhar + levantar_cadeira + subir_escadas + quedas + cp >= 11",
+			"formula": "forca + ajuda_caminhar + levantar_cadeira + subir_escadas + quedas + se(sexo = 0, se(cp = 2, 0, 10), se(cp > 0, 0, 10))",
 			"tipo": "formula"
 		}
 	],
 };
+
+// "Mulher e CP > 33cm": 0,
+// "Homens e CP <= 34cm": 10,
+// "Homens e CP > 34cm": 0,
+// "Mulher e CP <= 33cm": 10
 
 function JSONRender({ json, processor }: RenderJSON) {
 	let rendered: Array<Element> = [];
@@ -351,6 +375,7 @@ function SingleCategoricalQuestion({ id, varName, text, necessary, options, conv
 	let [idChecked, setIdChecked] = useState(id);
 
 	processor.addTable(conversionTable, varName);
+	processor.init(varName, 'undefined', varName);
 
 	options.forEach((op, i) => {
 		optionsEl.push(
@@ -438,14 +463,12 @@ function Form() {
 		} else {
 			alias = "";
 		}
-		
+
 		let aliasedTable = {};
-		
+
 		for (const property in table) {
 			aliasedTable[alias + property] = table[property];
 		}
-		
-		console.log(aliasedTable);
 
 		processor.addTable(aliasedTable);
 	}
@@ -455,10 +478,19 @@ function Form() {
 		return processor.exec(formula);
 	};
 
+	const init = (varName: string, value: any, aliasValue?: string) => {
+		if (aliasValue != undefined) {
+			value = aliasValue + "." + value;
+		}
+
+		processor.addVariable(varName, value);
+	};
+
+
 	return (<>
-		<Header />
+		<Header logout={true} />
 		<div className="questions-field align-in-column">
-			<JSONRender json={test as FormJSON} processor={{'addVariable': addVarialble, 'addTable': addTable, 'execute': execute}}/>
+			<JSONRender json={test as FormJSON} processor={{ 'addVariable': addVarialble, 'addTable': addTable, 'execute': execute, 'init': init }} />
 		</div>
 	</>);
 }

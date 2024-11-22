@@ -1,15 +1,16 @@
 import "./styles/Header.scss";
-const React = require('react');
+import React from 'react';
 
 interface headerProp {
-    title?: string
+    title?: string,
+    logout: boolean
 }
 
-export const Header: React.FC<headerProp> = ({ title }) => {
+export const Header: React.FC<headerProp> = ({ title, logout = false }) => {
     return (
         <header>
             <button className="no-style logout-button">
-                <span>&#10005;</span>Logout
+                {logout ? <><span>&#10005;</span>Logout</> : <>Return</>}
             </button>
             <div className="align-in-row-left">
                 <img className="logo" src="/static/icons/backbone.svg" />
