@@ -18,7 +18,7 @@ module.exports = merge(common, {
   module: {
     rules: [
       {
-        test: /\.m?jsx?$/,
+        test: /\.[mc]?jsx?$/,
         exclude: /(node_modules|bower_components)/,
         use: {
           loader: "swc-loader"

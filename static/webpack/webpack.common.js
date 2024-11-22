@@ -8,7 +8,7 @@ const getEntryObject = () => {
   const entries = {};
   // for javascript/typescript entry file
   glob
-    .sync(Path.join(__dirname, "../src/application/*.{mjs,js,ts,jsx,tsx}"))
+    .sync(Path.join(__dirname, "../src/application/*.{cjs,mjs,js,ts,jsx,tsx}"))
     .forEach((path) => {
       const name = Path.basename(path);
       const extension = Path.extname(path);
@@ -63,7 +63,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.m?jsx?$/,
+        test: /\.[mc]?jsx?$/,
         exclude: /(node_modules|bower_components)/,
         use: {
           loader: "swc-loader"
