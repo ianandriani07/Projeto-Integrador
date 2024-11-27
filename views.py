@@ -11,6 +11,10 @@ def inicio():
 def hub():
     return render_template('hub.html')
 
+@app.route('/new-user', methods=['GET'])
+def hub():
+    return render_template('new_user.html')
+
 @app.route('/form', methods=['GET'])
 def project():
     return render_template('form.html')
