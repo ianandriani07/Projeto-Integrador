@@ -31,9 +31,14 @@ O SWC foi utilizado em vez do babel para transpilação do código jsx já que e
 Devido a experiência da equipe com a ferramenta e a necessidade de integrar o front com o back-end em flask ele foi escolhido. Além disso, ele removeu completamente a necessidade de usar um outro server como o next.js para fazer o serviço que um bundler qualquer faria. Ele possuí algumas coisas muito interessantes como uma pipeline de execução muito customizavel, ainda que pouco amigavel, e tem infinitos plugins. Para mais informações em como usar o Flask com o Webpack: [Flask e Webpack: Tutorial, a Origem](https://python-webpack-boilerplate.readthedocs.io/en/latest/setup_with_flask/ "Flask e Webpack: Tutorial, a Origem")
 
 **Flask**
-Irineu.
+O Flask foi escolhido por sua simplicidade e flexibilidade para criar APIs e integrar o front-end ao back-end. Ele permite uma integração fluida com o Webpack, sendo ideal para este projeto devido ao seu suporte a aplicações modulares. Além disso, foi selecionado por ser o framework de back-end com o qual a equipe tem mais experiência.
+
+Para mais informações: https://flask.palletsprojects.com/en/stable/
+
 **Azure SQL Database**
-Pinto
+O Azure SQL Database foi utilizado como banco de dados pela sua escalabilidade e segurança. Ele permite o armazenamento seguro de informações, garantindo alta disponibilidade para o sistema. Além disso, sua acessibilidade facilita o trabalho dos desenvolvedores e proporciona uma experiência confiável para os usuários.
+
+Para mais informações: https://azure.microsoft.com/pt-br/products/azure-sql/database/
 
 ## Quickstart
 ### Como iniciar o projeto na primeira vez
