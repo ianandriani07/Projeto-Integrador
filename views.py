@@ -22,7 +22,7 @@ def criar_formulario():
         data = request.json
         
         if 'titulo' not in data or not data['titulo']:
-            return jsonify({"erro": "O campo 'titulo' é obrigatório."}), 400
+            return jsonify({"status": False, "erro": "O campo 'titulo' é obrigatório."}), 400
         
         titulo = data['titulo']
         if not verificar_titulo_formulario_existente(titulo):
