@@ -4,6 +4,7 @@ Essa plataforma foi feita durante a disciplina de Projeto Integrado e ainda est�
 
 ## Índice
 - [Arquitetura](#arquitetura)
+- [Features](#features)
 - [Quickstart](#quickstart)
 
 ## Arquitetura
@@ -18,6 +19,7 @@ Essa plataforma foi feita durante a disciplina de Projeto Integrado e ainda est�
 
 
 ![Fluxo do Bundler](./images/Diagrama_de_Build.png)
+
 
 A stack usada e sua decisão estão a seguir:
 
@@ -42,6 +44,24 @@ Para mais informações: https://flask.palletsprojects.com/en/stable/
 O Azure SQL Database foi utilizado como banco de dados pela sua escalabilidade e segurança. Ele permite o armazenamento seguro de informações, garantindo alta disponibilidade para o sistema. Além disso, sua acessibilidade facilita o trabalho dos desenvolvedores e proporciona uma experiência confiável para os usuários.
 
 Para mais informações: https://azure.microsoft.com/pt-br/products/azure-sql/database/
+
+## Features
+As features principais são:
+- Criação de Fórmularios
+- Associação de Fórmularios com formulas
+- Hierarquia vertical (administradores, coordenadores, alunos)
+- Organização automatizada de dados (nunca mais se preocupe em fumar seus resultados)
+
+
+![Use Cases](./images/use_cases.png)
+
+
+O sistema é divido em 3 tipos de úsuarios, os administradores, coordenadores de projetos e alunos. Com as respectivas funcionalidade associadas no diagrama.
+Um coodenador é capaz de criar um fórmulario no estilo do Google Forms que, então, será usado como um modelo para preenchimento posterior durante a consulta do aluno com um paciente. 
+Dados as informações preenchidas métricas a partir das fórmulas criadas durante o preenchimento do fórmulario são executadas a partir de um script local ([Processador](https://github.com/ianandriani07/Projeto-Integrador/blob/main/static/src/js/processor.ts "Processador de fórmulas")) e enviadas para o backend onde os resultados do fórmulario e das fórmulas é armazenado.
+Esses resultados ficam disponíveis a partir do hub onde o coordenador consegue visualizar todos os dados preenchidos até agora pelos alunos, para analises diversas.
+
+**Obs:** Nosso sistema não armazena nomes por razões de segurança, todas as entradas de respostas são salvas a partir de identificadores números. Ainda assim, caso o úsuario queria é possível criar um campo "Nome" nos fórmularios e, portanto, qualquer armazenamento de informações sensíveis é de cunho do usuário e nós, os desenvolvedores, não nos responsabilizamos pelo armazenamento indevido de informações que violem qualquer lei.
 
 ## Quickstart
 ### Como iniciar o projeto na primeira vez
