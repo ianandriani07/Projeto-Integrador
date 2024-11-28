@@ -22,13 +22,16 @@ Essa plataforma foi feita durante a disciplina de Projeto Integrado e ainda est�
 A stack usada e sua decisão estão a seguir:
 
 **React**
-O react foi escolhido pela facilidade de reutilização de código, principalmente na parte de renderização de fórmularios customizados. Ele facilitou a implementação, extensão e diminui o acoplamento do projeto nessa parte e foi por isso que foi escolhido para essa tarefa. Para mais informações em como usar react: [React: Quickstart](https://react.dev/learn "React: Quickstart")
+O react foi escolhido pela facilidade de reutilização de código, principalmente na parte de renderização de fórmularios customizados. Ele facilitou a implementação, extensão e diminui o acoplamento do projeto nessa parte e foi por isso que foi escolhido para essa tarefa. 
+Para mais informações em como usar react: [React: Quickstart](https://react.dev/learn "React: Quickstart")
 
 **SWC**
-O SWC foi utilizado em vez do babel para transpilação do código jsx já que ele tem suporte nativo para typescript e diminui uma dependência adicional do projeto. Além disso, ele tem um único arquivo de configuração em vez 300 deles. Para saber como usar o SWC com o Webpack e o Flask: [Usando o Webpack, Flask e SWC](https://python-webpack-boilerplate.readthedocs.io/en/latest/swc/ "Usando o Webpack, Flask e SWC")
+O SWC foi utilizado em vez do babel para transpilação do código jsx já que ele tem suporte nativo para typescript e diminui uma dependência adicional do projeto. Além disso, ele tem um único arquivo de configuração em vez 300 deles. 
+Para saber como usar o SWC com o Webpack e o Flask: [Usando o Webpack, Flask e SWC](https://python-webpack-boilerplate.readthedocs.io/en/latest/swc/ "Usando o Webpack, Flask e SWC")
 
 **Webpack**
-Devido a experiência da equipe com a ferramenta e a necessidade de integrar o front com o back-end em flask ele foi escolhido. Além disso, ele removeu completamente a necessidade de usar um outro server como o next.js para fazer o serviço que um bundler qualquer faria. Ele possuí algumas coisas muito interessantes como uma pipeline de execução muito customizavel, ainda que pouco amigavel, e tem infinitos plugins. Para mais informações em como usar o Flask com o Webpack: [Flask e Webpack: Tutorial, a Origem](https://python-webpack-boilerplate.readthedocs.io/en/latest/setup_with_flask/ "Flask e Webpack: Tutorial, a Origem")
+Devido a experiência da equipe com a ferramenta e a necessidade de integrar o front com o back-end em flask ele foi escolhido. Além disso, ele removeu completamente a necessidade de usar um outro server como o next.js para fazer o serviço que um bundler qualquer faria. Ele possuí algumas coisas muito interessantes como uma pipeline de execução muito customizavel, ainda que pouco amigavel, e tem infinitos plugins. 
+Para mais informações em como usar o Flask com o Webpack: [Flask e Webpack: Tutorial, a Origem](https://python-webpack-boilerplate.readthedocs.io/en/latest/setup_with_flask/ "Flask e Webpack: Tutorial, a Origem")
 
 **Flask**
 O Flask foi escolhido por sua simplicidade e flexibilidade para criar APIs e integrar o front-end ao back-end. Ele permite uma integração fluida com o Webpack, sendo ideal para este projeto devido ao seu suporte a aplicações modulares. Além disso, foi selecionado por ser o framework de back-end com o qual a equipe tem mais experiência.
