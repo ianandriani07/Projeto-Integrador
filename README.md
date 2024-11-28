@@ -9,10 +9,14 @@ Essa plataforma foi feita durante a disciplina de Projeto Integrado e ainda est�
 ## Arquitetura
 
 **Fluxo de Execução**
+
+
 ![Fluxo de Execução](./images/Fluxo_do_Projeto.png)
 
 
 **Fluxo do Bundler**
+
+
 ![Fluxo do Bundler](./images/Diagrama_de_Build.png)
 
 A stack usada e sua decisão estão a seguir:
