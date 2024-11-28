@@ -11,6 +11,9 @@
   {{ stylesheet_pack('hub') }}
   {{ javascript_pack('hub', attrs='defer') }}
   <title>Hub</title>
+  <script>
+    window.url_to_logout = '{{ url_for("logout") }}';
+  </script>
 </head>
 
 <body>
