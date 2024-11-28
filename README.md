@@ -9,11 +9,11 @@ Essa plataforma foi feita durante a disciplina de Projeto Integrado e ainda est�
 ## Arquitetura
 
 **Fluxo de Execução**
-![Fluxo de Execução]("https://github.com/ianandriani07/Projeto-Integrador/blob/main/images/Fluxo%20do%20Projeto.png")
+![Fluxo de Execução]("./images/Fluxo_do_Projeto.png")
 
 
 **Fluxo do Bundler**
-![Fluxo do Bundler]("https://github.com/ianandriani07/Projeto-Integrador/blob/main/images/Diagrama%20de%20Build.png")
+![Fluxo do Bundler]("./images/Diagrama_de_Build.png")
 
 A stack usada e sua decisão estão a seguir:
 
