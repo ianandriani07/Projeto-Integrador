@@ -12,7 +12,7 @@ def hub():
     return render_template('hub.html')
 
 @app.route('/new-user', methods=['GET'])
-def hub():
+def new_user():
     return render_template('new_user.html')
 
 @app.route('/form', methods=['GET'])
