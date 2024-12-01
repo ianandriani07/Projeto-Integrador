@@ -38,6 +38,8 @@ Para mais informações em como usar o Flask com o Webpack: [Flask e Webpack: Tu
 **Flask**
 O Flask foi escolhido por sua simplicidade e flexibilidade para criar APIs e integrar o front-end ao back-end. Ele permite uma integração fluida com o Webpack, sendo ideal para este projeto devido ao seu suporte a aplicações modulares. Além disso, foi selecionado por ser o framework de back-end com o qual a equipe tem mais experiência.
 
+Documentação: [Documentação da API](https://app.swaggerhub.com/apis-docs/IANDRIANI07/API_PI/1.0.0)
+
 Para mais informações: https://flask.palletsprojects.com/en/stable/
 
 **Azure SQL Database**
