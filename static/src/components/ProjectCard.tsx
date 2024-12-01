@@ -1,3 +1,4 @@
+import "./styles/ProjectCard.scss";
 const React = require('react');
 const { useState, useEffect } = React;
 
@@ -24,12 +25,16 @@ export function ProjectCard({ name, students, coordinators }) {
     }
 
     return (
-        <div className='project-card'>
-            <p>{`Projeto ${name}`}</p>
-            <p>{arrayToString('Alunos: ', students)}</p>
-            <p>{arrayToString('Coordenadores: ', coordinators)}</p>
-            <button>Exibir Dados</button>
-            <button>Relatorio</button>
+        <div className="project-wrapper">
+            <p className="project-name">{`Projeto ${name}`}</p>
+            <div className='project-card'>
+                <p>{arrayToString('Alunos: ', students)}</p>
+                <p>{arrayToString('Coordenadores: ', coordinators)}</p>
+                <div className="align-in-row pad-top">
+                    <a className="no-style rounded-borders-20px cancerous-yellow">Exibir Dados</a>
+                    <a className="no-style rounded-borders-20px sad-orange">Relatorio</a>
+                </div>
+            </div>
         </div>
     )
 }

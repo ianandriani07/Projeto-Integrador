@@ -488,9 +488,10 @@ function Form() {
 
 
 	return (<>
-		<Header logout={true} />
+		<Header logout={true} return_link={window.url_to_return} />
 		<div className="questions-field align-in-column">
 			<JSONRender json={test as FormJSON} processor={{ 'addVariable': addVarialble, 'addTable': addTable, 'execute': execute, 'init': init }} />
+			<button>Salvar</button>
 		</div>
 	</>);
 }
