@@ -15,9 +15,15 @@ def hub():
 def new_user():
     return render_template('new_user.html')
 
-@app.route('/form', methods=['GET'])
-def project():
-    return render_template('form.html')
+@app.route('/<int:id_formulario>/form', methods=['GET'])
+def project(id_formulario):
+    
+    formulario = Formularios.query.get(id_formulario)
+    
+    if not formulario:
+        return redirect(url_for('hub'))
+    
+    return render_template('form.html', id_formulario=id_formulario)
 
 @app.route('/criar-formulario', methods=['POST'])
 def criar_formulario():
