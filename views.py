@@ -143,6 +143,16 @@ def criar_perguntas():
                 "status": False,
                 "erro": "tipo inexistente."
         }), 400
+            
+        formula = data.get('formula', None)
+        if formula:
+            try:
+                formula = json.dumps(formula)  # Converte dicionário para JSON
+            except Exception as e:
+                return jsonify({
+                    "status": False,
+                    "erro": f"Erro ao processar fórmula: {str(e)}"
+                }), 400
         
         nome_variavel = data['nome_variavel']
         if not verificar_nome_variavel_pergunta(nome_variavel):
@@ -156,7 +166,8 @@ def criar_perguntas():
             texto = data['texto'],
             id_tipo = id_tipo,
             ordem = data['ordem'] if 'ordem' in data else get_max_ordem()+1,
-            nome_variavel = nome_variavel
+            nome_variavel = nome_variavel,
+            formula=formula
         )
         
         db.session.add(pergunta)
@@ -197,9 +208,11 @@ def listar_perguntas_formulario(id_formulario):
         # Lista de perguntas paginadas
         perguntas = perguntas_paginated.items
 
-        # IDs das perguntas para buscar as opções
-        id_perguntas = [pergunta.id for pergunta in perguntas]
-        opcoes = Opcoes.query.filter(Opcoes.id_pergunta.in_(id_perguntas)).order_by(Opcoes.ordem).all()
+        # IDs das perguntas para buscar as opções (apenas para tipos 1 e 4)
+        id_perguntas_com_opcoes = [
+            pergunta.id for pergunta in perguntas if pergunta.id_tipo in [1, 4]
+        ]
+        opcoes = Opcoes.query.filter(Opcoes.id_pergunta.in_(id_perguntas_com_opcoes)).order_by(Opcoes.ordem).all()
 
         # Organiza as opções por id_pergunta
         opcoes_por_pergunta = {}
@@ -212,29 +225,37 @@ def listar_perguntas_formulario(id_formulario):
         resultado = []
         for pergunta in perguntas:
             id_pergunta = pergunta.id
-            opcoes = opcoes_por_pergunta.get(id_pergunta, [])
+            lista_opcoes = []
+            tabela_conversao = {}
 
-            tabela_conversao = {opcao.texto: opcao.pontuacao for opcao in opcoes}
-            lista_opcoes = [
-                {
-                    "id": opcao.id,
-                    "texto": opcao.texto,
-                    "ordem": opcao.ordem,
-                    "pontuacao": opcao.pontuacao
-                }
-                for opcao in opcoes
-            ]
+            # Adicionar opções e tabela de conversão apenas para tipos 1 e 4
+            if pergunta.id_tipo in [1, 4]:  # Objetiva ou Múltipla Escolha
+                lista_opcoes = [
+                    {
+                        "id": opcao.id,
+                        "texto": opcao.texto,
+                        "ordem": opcao.ordem,
+                        "pontuacao": opcao.pontuacao
+                    }
+                    for opcao in opcoes_por_pergunta.get(id_pergunta, [])
+                ]
+                tabela_conversao = {opcao.texto: opcao.pontuacao for opcao in opcoes_por_pergunta.get(id_pergunta, [])}
 
+            # Carregar fórmula se disponível
+            formula = json.loads(pergunta.formula) if pergunta.formula else None
+
+            # Construir a resposta da pergunta
             resultado.append({
                 "id": id_pergunta,
                 "id_formulario": pergunta.id_formulario,
                 "texto": pergunta.texto,
-                "tipo": get_descricao_tipo(pergunta.id_tipo),
+                "tipo": get_descricao_tipo(pergunta.id_tipo),  # Pega a descrição do tipo
                 "ordem": pergunta.ordem,
                 "obrigatoria": pergunta.obrigatoria,
                 "nome_variavel": pergunta.nome_variavel,
-                "opcoes": lista_opcoes,
-                "tabela_conversao": tabela_conversao
+                "opcoes": lista_opcoes,  # Lista de opções (vazia para outros tipos)
+                "tabela_conversao": tabela_conversao,  # Tabela de conversão (vazia para outros tipos)
+                "formula": formula  # Fórmula associada à pergunta (se existir)
             })
 
         # Retorna o JSON com paginação
@@ -385,3 +406,48 @@ def listar_opcoes_perguntas(id_pergunta):
             "status": False,
             "erro": str(e)
         }), 500
+
+@app.route('/responder-pergunta', methods=['POST'])
+def responder_pergunta():
+    try:
+        data = request.json
+        
+        campos = ['nome_variavel', 'resposta']
+        campos_faltando = [campo for campo in campos if campo not in data or data[campo] is None]
+        
+        if campos_faltando:
+            return jsonify({
+                "status": False,
+                "erro": f"Os seguintes campos estão faltando ou nulos: {', '.join(campos_faltando)}"
+            }), 400
+
+        nome_variavel = data['nome_variavel']
+        valor_resposta = data['resposta']
+        
+        nova_resposta = Respostas(nome_variavel=nome_variavel, valor_resposta=valor_resposta)
+        db.session.add(nova_resposta)  # Adiciona o objeto à sessão
+        db.session.commit()
+        
+        return jsonify({
+            "status": True,
+            "mensagem": "Resposta cadastrada com sucesso!"
+        }), 201
+    
+    except Exception as e:
+        return jsonify({
+            "status": False,
+            "erro": str(e)
+        })
+        
+@app.route('/respostas', methods=['GET'])
+def listar_respostas():
+    # Consultando todas as respostas
+    respostas = Respostas.query.all()
+
+    # Convertendo para formato JSON
+    respostas_json = [
+        {"nome_variavel": resposta.nome_variavel, "valor_resposta": resposta.valor_resposta}
+        for resposta in respostas
+    ]
+
+    return jsonify(respostas_json)

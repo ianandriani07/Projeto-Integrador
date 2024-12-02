@@ -43,6 +43,7 @@ class Perguntas(db.Model):
     ordem = db.Column(db.Integer)
     obrigatoria = db.Column(db.Boolean, default=False)
     nome_variavel = db.Column(db.String(50), nullable=False)  # Novo campo adicionado
+    formula = db.Column(db.Text, nullable=True)  # Novo campo
 
     opcoes = db.relationship('Opcoes', backref='pergunta', cascade='all, delete-orphan')
 
@@ -55,14 +56,10 @@ class Opcoes(db.Model):
     pontuacao = db.Column(db.Integer, nullable=False, default=0)  
 
 class Respostas(db.Model):
-    __tablename__ = 'respostas'
-    id = db.Column(db.Integer, primary_key=True)
-    id_formulario = db.Column(db.Integer, db.ForeignKey('formularios.id', ondelete="CASCADE"), nullable=False)
-    id_usuario = db.Column(db.Integer)  # Campo opcional para rastrear quem respondeu
-    data_resposta = db.Column(db.DateTime, default=db.func.current_timestamp())
-
-    respostas_perguntas = db.relationship('RespostasPerguntas', backref='resposta', cascade='all, delete-orphan')
-
+    __tablename__ = 'Respostas'  # Nome da tabela no banco de dados
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Chave primária auto-incrementada
+    nome_variavel = db.Column(db.String(255), nullable=False)  # Nome da variável (não pode ser nulo)
+    valor_resposta = db.Column(db.Text, nullable=True)  # Valor da resposta (pode ser nulo)
 
 class RespostasPerguntas(db.Model):
     __tablename__ = 'respostas_perguntas'
