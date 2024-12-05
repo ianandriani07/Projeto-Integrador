@@ -1,1 +1,97 @@
 @use "base.scss";
+
+.user-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.hub {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    padding: 16px;
+    border-radius: 20px;
+    background-color: #d8d1d1;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tabs {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.tab {
+    flex: 1; /* Garante que cada aba ocupe a mesma largura */
+    text-align: center;
+    padding: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    color: #333;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s;
+    margin: 0 8px; /* Espaço entre os botões */
+}
+
+.tab:hover {
+    background-color: #007BFF;
+    color: white;
+    transform: scale(1.05);
+}
+
+.tab.active {
+    background-color: #007BFF;
+    color: white;
+    border-color: #007BFF;
+    transform: scale(1.05);
+}
+
+.tab-content {
+    flex-grow: 1;
+    width: 100%;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+
+button.btn {
+    width: 100%; 
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background-color: #ff7f50;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+button.btn:hover {
+    background-color: #ff4500;
+    transform: scale(1.05);
+}
+
+
+form {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
