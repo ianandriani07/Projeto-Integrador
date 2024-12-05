@@ -413,37 +413,58 @@ def listar_opcoes_perguntas(id_pergunta):
             "erro": str(e)
         }), 500
 
-@app.route('/responder-pergunta', methods=['POST'])
-def responder_pergunta():
+@app.route('/responder-perguntas', methods=['POST'])
+def responder_perguntas():
     try:
         data = request.json
         
-        campos = ['nome_variavel', 'resposta']
-        campos_faltando = [campo for campo in campos if campo not in data or data[campo] is None]
-        
-        if campos_faltando:
+        if not isinstance(data, list):
             return jsonify({
                 "status": False,
-                "erro": f"Os seguintes campos estão faltando ou nulos: {', '.join(campos_faltando)}"
+                "erro": "O corpo da requisição deve ser uma lista de objetos contendo 'nome_variavel' e 'resposta'."
             }), 400
-
-        nome_variavel = data['nome_variavel']
-        valor_resposta = data['resposta']
         
-        nova_resposta = Respostas(nome_variavel=nome_variavel, valor_resposta=valor_resposta)
-        db.session.add(nova_resposta)  # Adiciona o objeto à sessão
+        respostas_a_salvar = []
+        erros = []
+        
+        for idx, resposta in enumerate(data):
+            # Verifica se os campos necessários estão presentes e não nulos
+            campos = ['nome_variavel', 'resposta']
+            campos_faltando = [campo for campo in campos if campo not in resposta or resposta[campo] is None]
+            
+            if campos_faltando:
+                erros.append({
+                    "indice": idx,
+                    "erro": f"Os seguintes campos estão faltando ou nulos: {', '.join(campos_faltando)}"
+                })
+                continue
+            
+            # Cria a instância da resposta
+            respostas_a_salvar.append(Respostas(
+                nome_variavel=resposta['nome_variavel'],
+                valor_resposta=resposta['resposta']
+            ))
+        
+        # Se houver erros, retorna os detalhes
+        if erros:
+            return jsonify({
+                "status": False,
+                "erros": erros
+            }), 400
+        
+        # Salva todas as respostas válidas no banco de dados
+        db.session.add_all(respostas_a_salvar)
         db.session.commit()
         
         return jsonify({
             "status": True,
-            "mensagem": "Resposta cadastrada com sucesso!"
+            "mensagem": f"{len(respostas_a_salvar)} respostas cadastradas com sucesso!"
         }), 201
-    
     except Exception as e:
         return jsonify({
             "status": False,
-            "erro": str(e)
-        })
+            "erro": f"Ocorreu um erro interno: {str(e)}"
+        }), 500
         
 @app.route('/respostas', methods=['GET'])
 def listar_respostas():
