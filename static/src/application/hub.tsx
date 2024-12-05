@@ -8,7 +8,7 @@ import { Header } from "../components/Header.tsx";
 function Hub() {
     return (
         <>
-            <Header title='Bem Vindo “Usuario”' logout={true} />
+            <Header title='Bem Vindo “Usuario”' logout={true} return_link={window.url_to_logout} />
             <nav>
                 <IconButton className="no-style hub-icon-button" iconPath={"/static/icons/torso.svg"}>Adicionar Usuario</IconButton>
                 <IconButton className="no-style hub-icon-button" iconPath={"/static/icons/plus.svg"}>Adicionar Projeto</IconButton>
@@ -16,7 +16,7 @@ function Hub() {
                 <IconButton className="no-style hub-icon-button" iconPath={"/static/icons/cog.svg"}>Configurações</IconButton>
             </nav>
             <div className="card-holder">
-                <ProjectCard name={"Test"} students={['Fabio', 'Augusto', 'Jorjão Berranteiro']} coordinators={['Sua mãe']} />
+                <ProjectCard name={"Test"} students={['Fabio', 'Augusto', 'Jorjão Berranteiro']} coordinators={['Sua mãe']} form_ids={[1]} />
             </div>
         </>
     )

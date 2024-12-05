@@ -1,5 +1,5 @@
 import "../styles/form.scss";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Header } from "../components/Header.tsx";
 import { Processor, DefaultFunctions } from "../js/processor.ts";
@@ -37,6 +37,7 @@ interface SingleCategoryQuestionType {
 interface FormulaQuestionType {
 	text: string,
 	formula: string,
+	formulaName: string,
 	process: ProcessorFunctions
 }
 
@@ -55,6 +56,7 @@ interface SingleCategoricalQuestionJSON {
 interface FormulaQuestionJSON {
 	texto: string,
 	formula: string,
+	nome_variavel: string,
 	tipo: QuestionType
 }
 
@@ -67,256 +69,36 @@ interface FormJSON {
 }
 
 interface RenderJSON {
-	json: FormJSON,
+	json?: FormJSON,
 	processor: ProcessorFunctions
 }
 
-let test = {
-	"perguntas": [
-		{
-			"id": 4,
-			"id_formulario": 1,
-			"nome_variavel": "sexo",
-			"obrigatoria": false,
-			"opcoes": [
-				{
-					"id": 7,
-					"ordem": 1,
-					"pontuacao": 0,
-					"texto": "Homem"
-				},
-				{
-					"id": 8,
-					"ordem": 2,
-					"pontuacao": 1,
-					"texto": "Mulher"
-				}
-			],
-			"ordem": 1,
-			"tabela_conversao": {
-				"Homem": 0,
-				"Mulher": 1,
-			},
-			"texto": "Sexo?",
-			"tipo": "objetiva"
-		},
-		{
-			"id": 4,
-			"id_formulario": 1,
-			"nome_variavel": "forca",
-			"obrigatoria": false,
-			"opcoes": [
-				{
-					"id": 7,
-					"ordem": 1,
-					"pontuacao": 0,
-					"texto": "Nenhuma"
-				},
-				{
-					"id": 8,
-					"ordem": 2,
-					"pontuacao": 1,
-					"texto": "Alguma"
-				},
-				{
-					"id": 9,
-					"ordem": 3,
-					"pontuacao": 2,
-					"texto": "Muita ou não consegue"
-				}
-			],
-			"ordem": 1,
-			"tabela_conversao": {
-				"Alguma": 1,
-				"Muita ou não consegue": 2,
-				"Nenhuma": 0
-			},
-			"texto": "O quanto de dificuldade você tem para levantar e carregar 5kg?",
-			"tipo": "objetiva"
-		},
-		{
-			"id": 5,
-			"id_formulario": 1,
-			"nome_variavel": "ajuda_caminhar",
-			"obrigatoria": false,
-			"opcoes": [
-				{
-					"id": 10,
-					"ordem": 1,
-					"pontuacao": 0,
-					"texto": "Nenhuma"
-				},
-				{
-					"id": 11,
-					"ordem": 2,
-					"pontuacao": 1,
-					"texto": "Alguma"
-				},
-				{
-					"id": 12,
-					"ordem": 3,
-					"pontuacao": 2,
-					"texto": "Muita, usa apoios ou é incapaz"
-				}
-			],
-			"ordem": 2,
-			"tabela_conversao": {
-				"Alguma": 1,
-				"Muita, usa apoios ou é incapaz": 2,
-				"Nenhuma": 0
-			},
-			"texto": "O quanto de dificuldade você tem para atravessar um cômodo?",
-			"tipo": "objetiva"
-		},
-		{
-			"id": 6,
-			"id_formulario": 1,
-			"nome_variavel": "levantar_cadeira",
-			"obrigatoria": false,
-			"opcoes": [
-				{
-					"id": 13,
-					"ordem": 1,
-					"pontuacao": 0,
-					"texto": "Nenhuma"
-				},
-				{
-					"id": 14,
-					"ordem": 2,
-					"pontuacao": 1,
-					"texto": "Alguma"
-				},
-				{
-					"id": 15,
-					"ordem": 3,
-					"pontuacao": 2,
-					"texto": "Muita ou não consegue sem ajuda"
-				}
-			],
-			"ordem": 3,
-			"tabela_conversao": {
-				"Alguma": 1,
-				"Muita ou não consegue sem ajuda": 2,
-				"Nenhuma": 0
-			},
-			"texto": "O quanto de dificuldade você tem para levantar de uma cama ou cadeira?",
-			"tipo": "objetiva"
-		},
-		{
-			"id": 7,
-			"id_formulario": 1,
-			"nome_variavel": "subir_escadas",
-			"obrigatoria": false,
-			"opcoes": [
-				{
-					"id": 16,
-					"ordem": 1,
-					"pontuacao": 0,
-					"texto": "Nenhuma"
-				},
-				{
-					"id": 17,
-					"ordem": 2,
-					"pontuacao": 1,
-					"texto": "Alguma"
-				},
-				{
-					"id": 18,
-					"ordem": 3,
-					"pontuacao": 2,
-					"texto": "Muita ou não consegue"
-				}
-			],
-			"ordem": 4,
-			"tabela_conversao": {
-				"Alguma": 1,
-				"Muita ou não consegue": 2,
-				"Nenhuma": 0
-			},
-			"texto": "O quanto de dificuldade você tem para subir um lance de escadas de 10 degraus?",
-			"tipo": "objetiva"
-		},
-		{
-			"id": 8,
-			"id_formulario": 1,
-			"nome_variavel": "quedas",
-			"obrigatoria": false,
-			"opcoes": [
-				{
-					"id": 19,
-					"ordem": 1,
-					"pontuacao": 0,
-					"texto": "Nenhuma"
-				},
-				{
-					"id": 20,
-					"ordem": 2,
-					"pontuacao": 1,
-					"texto": "1-3 quedas"
-				},
-				{
-					"id": 21,
-					"ordem": 3,
-					"pontuacao": 2,
-					"texto": "4 ou mais quedas"
-				}
-			],
-			"ordem": 5,
-			"tabela_conversao": {
-				"1-3 quedas": 1,
-				"4 ou mais quedas": 2,
-				"Nenhuma": 0
-			},
-			"texto": "Quantas vezes você caiu no último ano?",
-			"tipo": "objetiva"
-		},
-		{
-			"id": 9,
-			"id_formulario": 1,
-			"nome_variavel": "cp",
-			"obrigatoria": false,
-			"opcoes": [
-				{
-					"id": 22,
-					"ordem": 1,
-					"texto": "CP <= 33cm"
-				},
-				{
-					"id": 23,
-					"ordem": 2,
-					"texto": "33cm < CP <= 34cm"
-				},
-				{
-					"id": 24,
-					"ordem": 3,
-					"texto": "CP > 34cm"
-				},
-			],
-			"ordem": 6,
-			"tabela_conversao": {
-				"CP <= 33cm": 0,
-				"33cm < CP <= 34cm": 1,
-				"CP > 34cm": 2,
-			},
-			"texto": "Qual valor da Circunferência da Panturrilha?",
-			"tipo": "objetiva"
-		},
-		{
-			"texto": "Resultado",
-			"formula": "forca + ajuda_caminhar + levantar_cadeira + subir_escadas + quedas + se(sexo = 0, se(cp = 2, 0, 10), se(cp > 0, 0, 10))",
-			"tipo": "formula"
-		}
-	],
-};
+function saveAnswerAndRedirect(worldObj: object) {
+	const correctFormat = ([key, value]: [string, string]) => {
+		return {
+			"nome_variavel": key,
+			"resposta": value.slice(key.length + 1)
+		};
+	};
 
-// "Mulher e CP > 33cm": 0,
-// "Homens e CP <= 34cm": 10,
-// "Homens e CP > 34cm": 0,
-// "Mulher e CP <= 33cm": 10
+	fetch('/responder-pergunta', {
+		method: 'POST',
+		body: JSON.stringify(Object.entries(worldObj).map(correctFormat))
+	}).then(() => {
+		location.reload();
+	}
+	);
+}
 
 function JSONRender({ json, processor }: RenderJSON) {
 	let rendered: Array<Element> = [];
 	let id = 0;
+
+	if (json == undefined) {
+		return (
+			<></>
+		);
+	}
 
 	json.perguntas.forEach((question) => {
 		switch (question.tipo) {
@@ -336,7 +118,7 @@ function JSONRender({ json, processor }: RenderJSON) {
 					let q = question as FormulaQuestionJSON;
 					rendered.push(
 						(
-							<FormulaQuestion text={q.texto} formula={q.formula} process={processor} />
+							<FormulaQuestion text={q.texto} formula={q.formula} process={processor} formulaName={q.nome_variavel} />
 						)
 					);
 				}
@@ -372,7 +154,7 @@ function NumericQuestion({ text }: { text: string }) {
 function SingleCategoricalQuestion({ id, varName, text, necessary, options, conversionTable, processor }: SingleCategoryQuestionType): Element {
 
 	let optionsEl: Array<Element> = [];
-	let [idChecked, setIdChecked] = useState(id);
+	let [idChecked, setIdChecked] = useState(-1);
 
 	processor.addTable(conversionTable, varName);
 	processor.init(varName, 'undefined', varName);
@@ -432,16 +214,18 @@ function MultipleCategoricalQuestion({ id, text }: { id: number, text: string })
 	);
 }
 
-function FormulaQuestion({ text, formula, process }: FormulaQuestionType) {
+function FormulaQuestion({ text, formula, formulaName, process }: FormulaQuestionType) {
+	let output = process.execute(formula);
+	process.addVariable(formulaName, output);
+
 	return (
 		<div className="card force-shorter">
-			<p>{text}: {process.execute(formula)}</p>
+			<p>{text}: {output}</p>
 		</div>
 	);
 }
 
 function Form() {
-	let categoryId = -1;
 	const processor = new Processor();
 
 	const [worldObj, setWorldObj] = useState({});
@@ -486,11 +270,29 @@ function Form() {
 		processor.addVariable(varName, value);
 	};
 
+	const processor_functions = { 'addVariable': addVarialble, 'addTable': addTable, 'execute': execute, 'init': init };
+
+	const [form, setForm] = useState(undefined);
+
+	useEffect(() => {
+		fetchQuestion();
+	}, []);
+
+	const fetchQuestion = async () => {
+		try {
+			const response = await fetch(`/perguntas/formulario/${window.id_form}`);
+			const result = await response.json();
+			setForm(result as FormJSON);
+		} catch (error) {
+			console.error("Bruh, you fucked up. The form_id don't exist in the backend. Or maybe you're trash...");
+		}
+	};
 
 	return (<>
-		<Header logout={true} />
+		<Header logout={false} return_link={window.url_to_return} />
 		<div className="questions-field align-in-column">
-			<JSONRender json={test as FormJSON} processor={{ 'addVariable': addVarialble, 'addTable': addTable, 'execute': execute, 'init': init }} />
+			<JSONRender json={form} processor={processor_functions} />
+			<a className="save-button rounded-borders-20px" onClick={() => { saveAnswerAndRedirect(worldObj) }}>Salvar</a>
 		</div>
 	</>);
 }

@@ -9,6 +9,9 @@
     .no-style {
         background: none;
         border: none;
+        color: black;
+        outline: none;
+        text-decoration: none;
     }
 
     nav {
@@ -74,12 +77,13 @@
 
     .card-holder {
         position: relative;
+        padding: 20px;
         top: 10%;
         height: 60%;
 
         $width: 96%;
         width: $width;
-        left: math.div(100% - $width, 2);
+        left: calc(math.div(100% - $width, 2) - 20px);
 
         background-color: white;
         border-radius: 15px;
