@@ -149,11 +149,12 @@ def criar_perguntas():
                 "status": False,
                 "erro": "tipo inexistente."
         }), 400
-            
+        
+
         formula = data.get('formula', None)
         if formula:
             try:
-                formula = json.dumps(formula)  # Converte dicionário para JSON
+                pass
             except Exception as e:
                 return jsonify({
                     "status": False,
@@ -248,7 +249,7 @@ def listar_perguntas_formulario(id_formulario):
                 tabela_conversao = {opcao.texto: opcao.pontuacao for opcao in opcoes_por_pergunta.get(id_pergunta, [])}
 
             # Carregar fórmula se disponível
-            formula = json.loads(pergunta.formula) if pergunta.formula else None
+            #formula = json.loads(pergunta.formula) if pergunta.formula else None
 
             # Construir a resposta da pergunta
             resultado.append({
@@ -261,7 +262,7 @@ def listar_perguntas_formulario(id_formulario):
                 "nome_variavel": pergunta.nome_variavel,
                 "opcoes": lista_opcoes,  # Lista de opções (vazia para outros tipos)
                 "tabela_conversao": tabela_conversao,  # Tabela de conversão (vazia para outros tipos)
-                "formula": formula  # Fórmula associada à pergunta (se existir)
+                "formula": pergunta.formula  # Fórmula associada à pergunta (se existir)
             })
 
         # Retorna o JSON com paginação
