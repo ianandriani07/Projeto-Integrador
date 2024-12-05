@@ -16,7 +16,7 @@ function Hub() {
                 <IconButton className="no-style hub-icon-button" iconPath={"/static/icons/cog.svg"}>Configurações</IconButton>
             </nav>
             <div className="card-holder">
-                <ProjectCard name={"Test"} students={['Fabio', 'Augusto', 'Jorjão Berranteiro']} coordinators={['Sua mãe']} />
+                <ProjectCard name={"Test"} students={['Fabio', 'Augusto', 'Jorjão Berranteiro']} coordinators={['Sua mãe']} form_ids={[1]} />
             </div>
         </>
     )
