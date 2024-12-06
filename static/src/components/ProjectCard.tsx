@@ -40,7 +40,7 @@ export function ProjectCard({ name, students, coordinators, form_ids }: { name: 
                     );
                 })}
                 <div className="align-in-row pad-top">
-                    <a className="no-style rounded-borders-20px cancerous-yellow">Exibir Dados</a>
+                    <a href="/exibir-respostas" className="no-style rounded-borders-20px cancerous-yellow">Exibir Dados</a>
                     <a className="no-style rounded-borders-20px sad-orange">Relatorio</a>
                 </div>
             </div>
