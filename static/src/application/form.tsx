@@ -6,6 +6,7 @@ import { Processor, DefaultFunctions } from "../js/processor.ts";
 
 interface ProcessorFunctions {
 	addVariable: (varName: string, value: any, aliasValue?: string) => void,
+	addDeferredVariable: (varName: string, value: any, aliasValue?: string) => void,
 	addTable: (table: Object, alias?: string) => void,
 	execute: (formula: string) => number,
 	init: (varName: string, value: any, aliasValue?: string) => void,
@@ -73,7 +74,7 @@ interface RenderJSON {
 	processor: ProcessorFunctions
 }
 
-function saveAnswerAndRedirect(worldObj: object) {
+function saveAnswerAndRedirect([worldObj, deferredWorldObj]: [object, object]) {
 	const correctFormat = ([key, value]: [string, string]) => {
 		return {
 			"nome_variavel": key,
@@ -81,12 +82,14 @@ function saveAnswerAndRedirect(worldObj: object) {
 		};
 	};
 
+	let united = Object.assign({}, worldObj, deferredWorldObj);
+
 	fetch('/responder-perguntas', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
-		body: JSON.stringify(Object.entries(worldObj).map(correctFormat))
+		body: JSON.stringify(Object.entries(united).map(correctFormat))
 	}).then(() => {
 		location.reload();
 	}
@@ -219,7 +222,7 @@ function MultipleCategoricalQuestion({ id, text }: { id: number, text: string })
 
 function FormulaQuestion({ text, formula, formulaName, process }: FormulaQuestionType) {
 	let output = process.execute(formula);
-	process.addVariable(formulaName, output);
+	process.addDeferredVariable(formulaName, output, formulaName);
 
 	return (
 		<div className="card force-shorter">
@@ -232,8 +235,9 @@ function Form() {
 	const processor = new Processor();
 
 	const [worldObj, setWorldObj] = useState({});
+	let deferredWorldObj = {};
 
-	const addVarialble = (varName: string, value: any, aliasValue?: string) => {
+	const addVariable = (varName: string, value: any, aliasValue?: string) => {
 		if (aliasValue != undefined) {
 			value = aliasValue + "." + value;
 		}
@@ -242,6 +246,14 @@ function Form() {
 		temp[varName] = value;
 
 		setWorldObj(temp);
+	};
+
+	const addDeferredVariable = (varName: string, value: any, aliasValue?: string) => {
+		if (aliasValue != undefined) {
+			value = aliasValue + "." + value;
+		}
+
+		deferredWorldObj[varName] = value;
 	};
 
 	const addTable = (table: Object, alias?: string) => {
@@ -262,6 +274,7 @@ function Form() {
 
 	const execute = (formula: string): number => {
 		processor.addVariables(worldObj);
+		processor.addVariables(deferredWorldObj);
 		return processor.exec(formula);
 	};
 
@@ -273,7 +286,7 @@ function Form() {
 		processor.addVariable(varName, value);
 	};
 
-	const processor_functions = { 'addVariable': addVarialble, 'addTable': addTable, 'execute': execute, 'init': init };
+	const processor_functions = { 'addVariable': addVariable, 'addTable': addTable, 'execute': execute, 'init': init, 'addDeferredVariable': addDeferredVariable };
 
 	const [form, setForm] = useState(undefined);
 
@@ -285,6 +298,7 @@ function Form() {
 		try {
 			const response = await fetch(`/perguntas/formulario/${window.id_form}?pagina=1&por_pagina=10`);
 			const result = await response.json();
+			console.log('WTF');
 			setForm(result as FormJSON);
 		} catch (error) {
 			console.error("Bruh, you fucked up. The form_id don't exist in the backend. Or maybe you're trash...");
@@ -295,7 +309,7 @@ function Form() {
 		<Header logout={false} return_link={window.url_to_return} />
 		<div className="questions-field align-in-column">
 			<JSONRender json={form} processor={processor_functions} />
-			<a className="save-button rounded-borders-20px" onClick={() => { saveAnswerAndRedirect(worldObj) }}>Salvar</a>
+			<a className="save-button rounded-borders-20px" onClick={() => { saveAnswerAndRedirect([worldObj, deferredWorldObj]) }}>Salvar</a>
 		</div>
 	</>);
 }
