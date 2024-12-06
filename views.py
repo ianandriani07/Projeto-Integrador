@@ -2,43 +2,57 @@ from app import app, login_manager, db
 from flask import render_template, redirect, url_for, flash, session, jsonify, request, json
 from models import *
 from helpers import *
+from flask_login import login_user, logout_user, login_required, current_user
 
 @app.route('/')
 def inicio():
     return redirect(url_for('login'))
 
+@login_required
 @app.route('/hub', methods=['GET', 'POST'])
 def hub():
-    return render_template('hub.html')
+    if current_user.is_authenticated:
+        return render_template('hub.html')
+    return redirect(url_for('login'))
 
+@login_required
 @app.route('/new-user', methods=['GET'])
 def new_user():
-    return render_template('new_user.html')
+    if current_user.is_authenticated:
+        return render_template('new_user.html')
+    return redirect(url_for('login'))
 
+@login_required
 @app.route('/<int:id_formulario>/form', methods=['GET'])
 def project(id_formulario):
     
-    formulario = Formularios.query.get(id_formulario)
-    
-    if not formulario:
-        return redirect(url_for('hub'))
-    
-    return render_template('form.html', id_formulario=id_formulario)
+    if current_user.is_authenticated:
+        formulario = Formularios.query.get(id_formulario)
+        
+        if not formulario:
+            return redirect(url_for('hub'))
+        
+        return render_template('form.html', id_formulario=id_formulario)
+    return redirect(url_for('login'))
 
+@login_required
 @app.route('/exibir-respostas')
 def exibir_respsotas():
-    response = listar_respostas()
     
-    respostas = json.loads(response.get_data(as_text=True))
-    
-    respostas_agrupadas = {}
-    for resposta in respostas:
-        num = resposta['numero_resposta']
-        if num not in respostas_agrupadas:
-            respostas_agrupadas[num] = []
-        respostas_agrupadas[num].append(resposta)
-    
-    return render_template('respostas.html', respostas_agrupadas=respostas_agrupadas)
+    if current_user.is_authenticated:
+        response = listar_respostas()
+        
+        respostas = json.loads(response.get_data(as_text=True))
+        
+        respostas_agrupadas = {}
+        for resposta in respostas:
+            num = resposta['numero_resposta']
+            if num not in respostas_agrupadas:
+                respostas_agrupadas[num] = []
+            respostas_agrupadas[num].append(resposta)
+        
+        return render_template('respostas.html', respostas_agrupadas=respostas_agrupadas)
+    return redirect(url_for('login'))
 
 @app.route('/criar-formulario', methods=['POST'])
 def criar_formulario():

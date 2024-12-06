@@ -1,7 +1,7 @@
 from app import app, login_manager, db
 from forms import LoginForm, RegisterForm
 from flask_login import login_user, logout_user, login_required, current_user
-from flask import render_template, redirect, url_for, flash, session
+from flask import render_template, redirect, url_for, flash, session, request, json, jsonify
 from models import Usuarios
 from helpers import generate_bcrypt_password
 
@@ -25,7 +25,7 @@ def login():
             login_user(user)
             session['user'] = user.Usuario
             print(user.Usuario)
-            return f"<h1>Olá {user.Usuario}!</h1>"          
+            return redirect(url_for('hub'))         
     
     return render_template('login.html', form=form)
 
@@ -48,8 +48,50 @@ def register():
         db.session.commit()
         return """<h1>Usuário cadastrado com sucesso!</h1>
                 <a href="{{ url_for('login') }}"></a>"""
-    return render_template('register.html', form=register)           
+    return render_template('register.html', form=register)
 
+@app.route('/criar-usuario', methods=['POST'])
+def criar_usuario():
+    
+    try:
+        data = request.json
+        campos = ['usuario', 'senha']
+        campos_faltando = [campo for campo in campos if campo not in data or data[campo] is None]
+            
+        if campos_faltando:
+            return jsonify({
+                "status": False,
+                "erro": f"Os seguintes campos estão faltando ou nulos: {', '.join(campos_faltando)}"
+            }), 400
+            
+        usuario = data['usuario']
+        senha = data['senha']
+        
+        user = Usuarios.query.filter_by(Usuario=usuario).first()
+        
+        if user:
+            return jsonify({
+                "status": False,
+                "erro": "Usuário já registrado."
+            }), 400
+            
+        senha_encriptada = generate_bcrypt_password(senha)
+        novo_usuario = Usuarios(Usuario=usuario, Senha=senha_encriptada)
+        
+        db.session.add(novo_usuario)
+        db.session.commit()
+        
+        return jsonify({
+            "status": True,
+            "mensagem": "Usuário criado com sucesso!"
+        }), 201
+        
+    except Exception as e:
+        return jsonify({
+            "status": False,
+            "erro": str(e)
+        }), 500
+    
 @login_required
 @app.route('/logout')
 def logout():

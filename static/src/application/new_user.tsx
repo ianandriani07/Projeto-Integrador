@@ -28,16 +28,16 @@ function UserForm({ onSubmit }) {
     return (
         <form className="user-form" onSubmit={onSubmit}>
             <div className="form-group">
-                <label htmlFor="name">Nome:</label>
-                <input type="text" id="name" name="name" placeholder="Digite o nome" required />
+                <label htmlFor="usuario">Nome:</label>
+                <input type="text" id="usuario" name="usuario" placeholder="Digite o nome" required />
             </div>
             <div className="form-group">
                 <label htmlFor="email">Email:</label>
                 <input type="email" id="email" name="email" placeholder="Digite o email" required />
             </div>
             <div className="form-group">
-                <label htmlFor="password">Senha:</label>
-                <input type="password" id="password" name="password" placeholder="Digite a senha" required />
+                <label htmlFor="senha">Senha:</label>
+                <input type="password" id="senha" name="senha" placeholder="Digite a senha" required />
             </div>
             <div className="form-group">
                 <button type="submit" className="btn">Criar Usuário</button>
@@ -85,11 +85,47 @@ function DeleteForm({ onSubmit }) {
 function NewUser() {
     const [activeTab, setActiveTab] = React.useState("add");
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const formData = new FormData(e.target);
+        const form = e.target; // Referência ao formulário
+        const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        console.log("Form Data:", data);
+
+        // Remover o campo de e-mail, se existir
+        delete data.email;
+
+        console.log("Form Data sem email:", data); // Para depuração
+
+        // Chamada à API
+        try {
+            const response = await fetch("http://localhost:8000/criar-usuario", {
+                method: "POST", // Ou "PUT", "DELETE", etc., dependendo da ação
+                headers: {
+                    "Content-Type": "application/json", // Envia os dados como JSON
+                },
+                body: JSON.stringify(data), // Converte os dados do formulário para JSON
+            });
+
+            if (!response.ok) {
+                // Tenta extrair a mensagem de erro do JSON retornado
+                const errorData = await response.json();
+                console.error("Erro na API:", errorData);
+                alert(`Erro: ${errorData.message || "Ocorreu um erro desconhecido."}`);
+                return;
+            }
+
+            // Processa a resposta bem-sucedida
+            const result = await response.json();
+            console.log("Resposta da API:", result);
+            alert("Operação realizada com sucesso!");
+
+            // Limpa os campos do formulário após a submissão bem-sucedida
+            form.reset();
+        } catch (error) {
+            // Captura erros da rede ou falhas na chamada
+            console.error("Erro ao chamar a API:", error);
+            alert("Erro de rede ou na chamada à API.");
+        }
     };
 
     const renderContent = () => {
