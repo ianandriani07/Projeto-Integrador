@@ -81,8 +81,11 @@ function saveAnswerAndRedirect(worldObj: object) {
 		};
 	};
 
-	fetch('/responder-pergunta', {
+	fetch('/responder-perguntas', {
 		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
 		body: JSON.stringify(Object.entries(worldObj).map(correctFormat))
 	}).then(() => {
 		location.reload();
@@ -280,7 +283,7 @@ function Form() {
 
 	const fetchQuestion = async () => {
 		try {
-			const response = await fetch(`/perguntas/formulario/${window.id_form}`);
+			const response = await fetch(`/perguntas/formulario/${window.id_form}?pagina=1&por_pagina=10`);
 			const result = await response.json();
 			setForm(result as FormJSON);
 		} catch (error) {

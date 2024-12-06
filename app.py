@@ -3,12 +3,15 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from config import Config
 import os
+from flask_migrate import Migrate
 from webpack_boilerplate.config import setup_jinja2_ext
 
 
 app = Flask(__name__, static_folder="static/build", static_url_path="/static/")
 app.config.from_object(Config)
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+from models import Usuarios, Formularios, TiposPerguntas, Perguntas, Opcoes, NumeroResposta, Respostas, RespostasPerguntas
 app.config["SECRET_KEY"] = "AgiotechDominandoOMundo"
 
 app.config['DEBUG'] = True

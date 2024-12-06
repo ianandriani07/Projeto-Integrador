@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Respostas Agrupadas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap">
+    {{ stylesheet_pack('respostas') }}
+    {{ javascript_pack('respostas', attrs='defer') }}
+</head>
+<body>
+    <h1 class="titulo">Respostas do Formulário</h1>
+
+    {% for numero_resposta, respostas in respostas_agrupadas.items() %}
+        <h2 class="titulo-tabela">Resposta número {{ numero_resposta }}</h2>
+        <table border="1" class="tabela">
+            <thead>
+                <tr>
+                    <th>Nome da variável</th>
+                    <th>Valor da resposta</th>
+                </tr>
+            </thead>
+            <tbody class="tabela__corpo">
+                {% for resposta in respostas %}
+                <tr>
+                    <td>{{ resposta.nome_variavel }}</td>
+                    <td>{{ resposta.valor_resposta }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+</body>
+</html>

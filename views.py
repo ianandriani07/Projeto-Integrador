@@ -25,6 +25,21 @@ def project(id_formulario):
     
     return render_template('form.html', id_formulario=id_formulario)
 
+@app.route('/exibir-respostas')
+def exibir_respsotas():
+    response = listar_respostas()
+    
+    respostas = json.loads(response.get_data(as_text=True))
+    
+    respostas_agrupadas = {}
+    for resposta in respostas:
+        num = resposta['numero_resposta']
+        if num not in respostas_agrupadas:
+            respostas_agrupadas[num] = []
+        respostas_agrupadas[num].append(resposta)
+    
+    return render_template('respostas.html', respostas_agrupadas=respostas_agrupadas)
+
 @app.route('/criar-formulario', methods=['POST'])
 def criar_formulario():
     
@@ -428,6 +443,12 @@ def responder_perguntas():
         respostas_a_salvar = []
         erros = []
         
+        nova_resposta = NumeroResposta()
+        db.session.add(nova_resposta)
+        db.session.commit()
+
+        numero_resposta_id = nova_resposta.IdNumeroResposta
+        
         for idx, resposta in enumerate(data):
             # Verifica se os campos necessários estão presentes e não nulos
             campos = ['nome_variavel', 'resposta']
@@ -443,7 +464,8 @@ def responder_perguntas():
             # Cria a instância da resposta
             respostas_a_salvar.append(Respostas(
                 nome_variavel=resposta['nome_variavel'],
-                valor_resposta=resposta['resposta']
+                valor_resposta=resposta['resposta'],
+                numero_resposta=numero_resposta_id
             ))
         
         # Se houver erros, retorna os detalhes
@@ -474,7 +496,7 @@ def listar_respostas():
 
     # Convertendo para formato JSON
     respostas_json = [
-        {"nome_variavel": resposta.nome_variavel, "valor_resposta": resposta.valor_resposta}
+        {"nome_variavel": resposta.nome_variavel, "valor_resposta": resposta.valor_resposta, "numero_resposta": resposta.numero_resposta}
         for resposta in respostas
     ]
 

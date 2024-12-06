@@ -6,12 +6,13 @@ services:
       - .:/app  # Sincronizar arquivos locais com o contêiner para hot-reload
       - /app/node_modules  # Evitar conflito de dependências
       - ./static/build:/app/static/build  # Volume compartilhado para os arquivos estáticos gerados pelo Webpack
+      - ./migrations:/app/migrations  # Persistir migrações no host
     ports:
       - "8000:8000"
     environment:
       - FLASK_ENV=development
       - FLASK_DEBUG=1
-    command: flask run --host=0.0.0.0 --port=8000
+    command: bash -c "flask db upgrade && flask run --host=0.0.0.0 --port=8000"
 
   webpack:
     build: .

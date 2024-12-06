@@ -1,0 +1,25 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+    align-items: center;
+}
+
+.titulo {
+    margin: 2em 0 0 0;
+}
+
+.titulo-tabela {
+    margin-bottom: 1em;
+    margin-top: 3em;
+}
+
+.tabela {
+    width: 50%;
+}
+
